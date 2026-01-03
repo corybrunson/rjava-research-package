@@ -25,8 +25,8 @@
 #'
 #' ( y <- read_reeb_graph("files/mergepairingtest.txt") )
 #'
-#' pairing(seq_along(x$values) - 1L, x$values, x$edgelist, method = "multi_pass")
-#' pairing(seq_along(y$values) - 1L, y$values, y$edgelist, method = "multi_pass")
+#' reeb_graph_pairs(x, method = "multi_pass")
+#' reeb_graph_pairs(y, method = "multi_pass")
 #'
 #' @export
 reeb_graph <- function(values, edgelist) {
