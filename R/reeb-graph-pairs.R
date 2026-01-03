@@ -78,5 +78,6 @@ reeb_graph_pairs <- function(x, method = "multi_pass") {
   )
   attr(res, "method") <- method
   attr(res, "elapsedTime") <- elapsedTime
+  class(res) <- c("reeb_graph_pairs", class(res))
   res
 }
