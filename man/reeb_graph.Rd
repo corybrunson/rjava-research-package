@@ -34,8 +34,8 @@ An object of class \code{"reeb_graph"}, which is a list of two elements:
 }
 }
 \description{
-This is an S3 class with associated constructors for a data structure to
-represent Reeb graphs in R.
+This is an S3 class with associated constructors for a data
+structure to represent Reeb graphs in R.
 }
 \details{
 Vertex indices start at zero, for consistency with examples. The

@@ -1,24 +1,25 @@
 #' @title Pair Reeb Graph Critical Points via Java
 #'
 #' @description This function calls one of two methods, merge-pair and
-#'   propagate-and-pair, to compute the extended persistent homology of a Reeb
-#'   graph.
+#'   propagate-and-pair, to pair the critical points of a Reeb graph.
 #'
 #' @details The function uses the `rJava` package to call either of two Java
 #'   methods from `ReebGraphPairing`. Ensure the Java Virtual Machine (JVM) is
 #'   initialized and the required class is available in the class path.
 #'
-#' @param name description
+#' @param x A [`reeb_graph`][reeb_graph] object.
+#' @param method Character; the pairing method to use. Matched to
+#'   `"single_pass"` or `"multi_pass"`.
 #' @return A data frame containing the six output vectors returned by the Java
 #'   method: the birth and death values (`double`), birth and death indices
-#'   (`integer`), and birth and death orders (`integer`). The data frame has an
-#'   attribute `"elapsedTime"` for the elapsed time.
+#'   (`integer`), and birth and death orders (`integer`). The data frame has
+#'   attributes `"method"` for the method used and `"elapsedTime"` for the
+#'   elapsed time.
 #' @examples
 #' ( ex_rg <- read_reeb_graph("files/running_example_reeb_graph.txt") )
-#' ( ex_ph <- reeb_graph_pairs(ex_rg) )
-#' attr(ex_ph, "elapsedTime")
-#'
-#' @example inst/examples/ex-reeb-graph-pairs.R
+#' ( ex_cp <- reeb_graph_pairs(ex_rg) )
+#' attr(ex_cp, "method")
+#' attr(ex_cp, "elapsedTime")
 #' @export
 reeb_graph_pairs <- function(x, method = "multi_pass") {
 

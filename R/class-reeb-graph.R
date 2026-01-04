@@ -1,7 +1,7 @@
-#' An S3 class and constructors for Reeb graphs
+#' @title An S3 class and constructors for Reeb graphs
 #'
-#' This is an S3 class with associated constructors for a data structure to
-#' represent Reeb graphs in R.
+#' @description This is an S3 class with associated constructors for a data
+#'   structure to represent Reeb graphs in R.
 #'
 #' @details Vertex indices start at zero, for consistency with examples. The
 #'   positions of `values` and the integer values in `edgelist` will correspond
@@ -31,6 +31,10 @@
 #' @export
 reeb_graph <- function(values, edgelist) {
   check_reeb_data(values, edgelist)
+  if (is.vector(edgelist)) edgelist <- t(matrix(edgelist, nrow = 2L))
+
+  storage.mode(values) <- "double"
+  storage.mode(edgelist) <- "integer"
 
   res <- list(values = values, edgelist = edgelist)
   class(res) <- c("reeb_graph", class(res))
@@ -44,8 +48,8 @@ check_reeb_data <- function(values, edgelist) {
     all(is.finite(values)),
     all(! is.na(values)),
     is.numeric(edgelist),
-    is.matrix(edgelist),
-    ncol(edgelist) == 2L,
+    ( is.vector(edgelist) && length(edgelist) %% 2L == 0L ) ||
+      ( is.matrix(edgelist) && ncol(edgelist) == 2L ),
     all(! is.na(edgelist)),
     min(edgelist) >= 0,
     max(edgelist) <= length(values) - 1L,
@@ -102,7 +106,7 @@ read_reeb_graph <- function(file) {
   edgelist <- lines[grepl("^e ", lines)]
   fromlist <- as.integer(gsub("^e ([0-9]+) [0-9]+$", "\\1", edgelist))
   tolist <- as.integer(gsub("^e [0-9]+ ([0-9]+)$", "\\1", edgelist))
-  edgelist <- cbind(fromlist, tolist)
+  edgelist <- unname(cbind(fromlist, tolist))
 
   reeb_graph(values = values, edgelist = edgelist)
 }

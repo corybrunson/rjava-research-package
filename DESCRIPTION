@@ -38,6 +38,8 @@ Description: Interface
     to the ReebGraphPairing Java program <doi:10.1007/978-3-030-33720-9_8>
     via rJava.
 Depends: R (>= 2.7.0), rJava (>= 0.5-0)
+Suggests:
+    tinytest
 SystemRequirements: Java (>= 1.5)
 License: GPL-3
 Packaged: 2014-09-04 13:17:36 UTC; tverbeke
