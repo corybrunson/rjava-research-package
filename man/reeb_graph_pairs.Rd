@@ -13,11 +13,11 @@ reeb_graph_pairs(x, method = "multi_pass")
 \code{"single_pass"} or \code{"multi_pass"}.}
 }
 \value{
-A data frame containing the six output vectors returned by the Java
-method: the birth and death values (\code{double}), birth and death indices
-(\code{integer}), and birth and death orders (\code{integer}). The data frame has
-attributes \code{"method"} for the method used and \code{"elapsedTime"} for the
-elapsed time.
+A data frame containing eight output vectors returned by the Java
+method: for the birth and death of each pair, the types (\code{character}),
+values (\code{double}), indices (\code{integer}), and orders (\code{integer}). The data
+frame has attributes \code{"method"} for the method used and \code{"elapsedTime"} for
+the elapsed time.
 }
 \description{
 This function calls one of two methods, merge-pair and

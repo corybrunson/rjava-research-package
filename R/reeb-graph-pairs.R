@@ -10,11 +10,11 @@
 #' @param x A [`reeb_graph`][reeb_graph] object.
 #' @param method Character; the pairing method to use. Matched to
 #'   `"single_pass"` or `"multi_pass"`.
-#' @return A data frame containing the six output vectors returned by the Java
-#'   method: the birth and death values (`double`), birth and death indices
-#'   (`integer`), and birth and death orders (`integer`). The data frame has
-#'   attributes `"method"` for the method used and `"elapsedTime"` for the
-#'   elapsed time.
+#' @return A data frame containing eight output vectors returned by the Java
+#'   method: for the birth and death of each pair, the types (`character`),
+#'   values (`double`), indices (`integer`), and orders (`integer`). The data
+#'   frame has attributes `"method"` for the method used and `"elapsedTime"` for
+#'   the elapsed time.
 #' @examples
 #' ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
 #' ( ex_rg <- read_reeb_graph(ex_sf) )
@@ -64,6 +64,8 @@ reeb_graph_pairs <- function(x, method = "multi_pass") {
   # rlist <- .jcall(java_file_path, "[Ljava/lang/String;", "getFinalGraph")
 
   # retrieve the separate lists
+  vType <- .jcall(java_file_path, "[S", "getVTypes")
+  pType <- .jcall(java_file_path, "[S", "getPTypes")
   pValues <- .jcall(java_file_path, "[F", "getPValues")
   pRealValues <- .jcall(java_file_path, "[F", "getPRealValues")
   vValues <- .jcall(java_file_path, "[F", "getVValues")
@@ -74,6 +76,8 @@ reeb_graph_pairs <- function(x, method = "multi_pass") {
 
   # assemble as data frame
   res <- data.frame(
+    birth_type  = vType,
+    death_type  = pType,
     birth_value = vRealValues,
     death_value = pRealValues,
     birth_index = vGlobalIDs,

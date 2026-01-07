@@ -39,6 +39,8 @@ import java.util.ArrayList;
 public class MergePairingCLI {
     //change rg to null to test
     static ArrayList<ReebGraph> rg = null;
+    static List<String> pTypes = new ArrayList<>();
+    static List<String> vTypes = new ArrayList<>();
     static List<Float> pValues = new ArrayList<>();
     static  List<Float> vValues = new ArrayList<>();
     static  List<Float> pRealValues = new ArrayList<>();
@@ -71,6 +73,8 @@ public class MergePairingCLI {
                     rg = TestResults.runAlgo(ip, new MergePairing(), new TimerNanosecond(), false);
                     finalGraph = TestResults.getPersistentDiagramCSV(rg);
                     ResultList resultList = TestResults.getResultList(rg);
+                    pTypes = resultList.pTypes;
+                    vTypes = resultList.vTypes;
                     pValues = resultList.pValues;
                     vValues = resultList.vValues;
                     pRealValues = resultList.pRealValues;
@@ -101,6 +105,8 @@ public class MergePairingCLI {
             elapsedTime = result.getElapsedTime();
 
             ResultList resultList = TestResults.getResultList(rg);
+            pTypes = resultList.pTypes;
+            vTypes = resultList.vTypes;
             pValues = resultList.pValues;
             vValues = resultList.vValues;
             pRealValues = resultList.pRealValues;
@@ -126,6 +132,21 @@ public class MergePairingCLI {
             arr[i] = list.get(i);
         }
         return arr;
+    }
+
+    private static String[] convertStringListToArray(List<String> list) {
+        String[] arr = new String[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            arr[i] = list.get(i);
+        }
+        return arr;
+    }
+
+    public static String[] getPTypes() {
+        return convertStringListToArray(pTypes);
+    }
+    public static String[] getVTypes() {
+        return convertStringListToArray(vTypes);
     }
 
     public static float[] getPRealValues() {

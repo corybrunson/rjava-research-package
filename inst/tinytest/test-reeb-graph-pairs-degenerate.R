@@ -5,6 +5,8 @@ for (alg in c("single_pass", "multi_pass")) {
   # regular (non-critical) node
   r <- reeb_graph(c(0,.5,1), c( 0,1, 1,2 ))
   p <- reeb_graph_pairs(r, method = alg)
+  expect_equal(p$birth_type, "LEAF_MIN")
+  expect_equal(p$death_type, "LEAF_MAX")
   expect_equal(p$birth_value, 0.)
   expect_equal(p$death_value, 1.)
   expect_equal(p$birth_index, 0L)
@@ -13,6 +15,8 @@ for (alg in c("single_pass", "multi_pass")) {
   # degenerate minimum
   r <- reeb_graph(c(.5,1,1), c( 0,1, 0,2 ))
   p <- reeb_graph_pairs(r, method = alg)
+  expect_equal(p$birth_type, c("LEAF_MIN", "UPFORK"))
+  expect_equal(p$death_type, c("LEAF_MAX", "LEAF_MAX"))
   expect_equal(p$birth_value, c(.5, .5))
   expect_equal(p$death_value, c(1, 1))
   expect_equal(p$birth_index, c(0L, 0L))
@@ -21,6 +25,8 @@ for (alg in c("single_pass", "multi_pass")) {
   # degenerate maximum
   r <- reeb_graph(c(0,0,.5), c( 0,2, 1,2 ))
   p <- reeb_graph_pairs(r, method = alg)
+  expect_equal(p$birth_type, c("LEAF_MIN", "LEAF_MIN"))
+  expect_equal(p$death_type, c("LEAF_MAX", "DOWNFORK"))
   expect_equal(p$birth_value, c(0., 0.))
   expect_equal(p$death_value, c(.5, .5))
   expect_equal(sort(p$birth_index), c(0L, 1L))
@@ -30,6 +36,8 @@ for (alg in c("single_pass", "multi_pass")) {
   r <- reeb_graph(c(0,0,.5,1,1), c( 0,2, 1,2, 2,3, 2,4 ))
   p <- reeb_graph_pairs(r, method = alg)
   p_ <- p[order(p$birth_index, -p$death_index), ]
+  expect_equal(p_$birth_type, c("LEAF_MIN", "LEAF_MIN", "UPFORK"))
+  expect_equal(p_$death_type, c("LEAF_MAX", "DOWNFORK", "LEAF_MAX"))
   expect_equal(p_$birth_value, c(0., 0., .5))
   expect_equal(p_$death_value, c(1., .5, 1.))
   expect_equal(p_$birth_index, c(0L, 1L, 2L))
@@ -39,6 +47,8 @@ for (alg in c("single_pass", "multi_pass")) {
   r <- reeb_graph(c(0,0,0,.5,1), c( 0,3, 1,3, 2,3, 3,4 ))
   p <- reeb_graph_pairs(r, method = alg)
   p_ <- p[order(p$birth_index, -p$death_index), ]
+  expect_equal(p_$birth_type, c("LEAF_MIN", "LEAF_MIN", "LEAF_MIN"))
+  expect_equal(p_$death_type, c("LEAF_MAX", "DOWNFORK", "DOWNFORK"))
   expect_equal(p_$birth_value, c(0., 0., 0.))
   expect_equal(p_$death_value, c(1., .5, .5))
   expect_equal(p_$birth_index, c(0L, 1L, 2L))
@@ -48,6 +58,8 @@ for (alg in c("single_pass", "multi_pass")) {
   r <- reeb_graph(c(0,0,0,.5,1,1), c( 0,3, 1,3, 2,3, 3,4, 3,5 ))
   p <- reeb_graph_pairs(r, method = alg)
   p_ <- p[order(p$birth_index, -p$death_index), ]
+  expect_equal(p_$birth_type, c("LEAF_MIN", "LEAF_MIN", "LEAF_MIN", "UPFORK"))
+  expect_equal(p_$death_type, c("LEAF_MAX", "DOWNFORK", "DOWNFORK", "LEAF_MAX"))
   expect_equal(p_$birth_value, c(0., 0., 0., .5))
   expect_equal(p_$death_value, c(1., .5, .5, 1.))
   expect_equal(p_$birth_index, c(0L, 1L, 2L, 3L))
@@ -57,6 +69,8 @@ for (alg in c("single_pass", "multi_pass")) {
   r <- reeb_graph(c(0,1,0,.3,.7,1), c( 0,1, 2,4, 3,4, 4,5 ))
   p <- reeb_graph_pairs(r, method = alg)
   p_ <- p[order(p$birth_index, -p$death_index), ]
+  expect_equal(p_$birth_type, c("LEAF_MIN", "LEAF_MIN", "LEAF_MIN"))
+  expect_equal(p_$death_type, c("LEAF_MAX", "LEAF_MAX", "DOWNFORK"))
   expect_equal(p_$birth_value, c(0., 0., .3), tolerance = 1e-07)
   expect_equal(p_$death_value, c(1., 1., .7), tolerance = 1e-07)
   expect_equal(p_$birth_index, c(0L, 2L, 3L))
@@ -66,7 +80,8 @@ for (alg in c("single_pass", "multi_pass")) {
   r2 <- reeb_graph(c(0,.3,.7,1), c( 0,2, 1,2, 2,3 ))
   p1 <- reeb_graph_pairs(r1, method = alg)
   p2 <- reeb_graph_pairs(r2, method = alg)
-  p2[, 3:4] <- p2[, 3:4] + 2L
+  p2[, c("birth_index", "death_index")] <-
+    p2[, c("birth_index", "death_index")] + 2L
   p12 <- rbind(p1, p2)
   p12_ <- p12[order(p12$birth_index, -p12$death_index), ]
   expect_equal(p_, p12_, check.attributes = FALSE)

@@ -5,7 +5,7 @@ x <- read_reeb_graph(f)
 p <- reeb_graph_pairs(x, method = "single")
 p_ <- p[order(p$birth_index, -p$death_index), ]
 expect_equal(
-  unname(as.matrix(p_[, 1:2])),
+  unname(as.matrix(p_[, c("birth_index", "death_index")])),
   cbind(
     # pairs in height (value) order
     c( 0,  1,  3,  4,  5,  7,  8, 13),
