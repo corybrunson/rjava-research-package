@@ -4,13 +4,13 @@
 \alias{reeb_graph_pairs}
 \title{Pair Reeb Graph Critical Points via Java}
 \usage{
-reeb_graph_pairs(x, method = "multi_pass")
+reeb_graph_pairs(x, method = c("single_pass", "multi_pass"))
 }
 \arguments{
 \item{x}{A \code{\link{reeb_graph}} object.}
 
 \item{method}{Character; the pairing method to use. Matched to
-\code{"single_pass"} or \code{"multi_pass"}.}
+\code{"single_pass"} (the default) or \code{"multi_pass"}.}
 }
 \value{
 A data frame containing eight output vectors returned by the Java
@@ -28,6 +28,13 @@ The function uses the \code{rJava} package to call either of two Java
 methods from \code{ReebGraphPairing}. Ensure the Java Virtual Machine (JVM) is
 initialized and the required class is available in the class path.
 
+The Propagate-and-Pair algorithm (\code{"single_pass"}) performs both join and
+split merge tree operations along a single sweep through the Reeb graph. It
+was shown to be more efficient on most test data, and to scale better with
+graph size, than an algorithm (\code{"multi_pass"}) that pairs some types along
+the sublevel filtration and others along the superlevel filtration (Tu &al,
+2019).
+
 Note that the names of the output data frame use \code{lo_} and \code{hi_} prefixes,
 in contrast to the Java source code that uses \code{birth_} and \code{death_}. This
 is meant to distinguish the pairs and their metadata from \link[=reeb_graph_persistence]{persistent homology}, which is here reformulated following
@@ -42,13 +49,13 @@ attr(ex_cp, "elapsedTime")
 
 }
 \references{
+\url{https://github.com/USFDataVisualization/ReebGraphPairing/}
+
 Tu J, Hajij M, Rosen P. Propagate and Pair: A Single-Pass Approach to
 Critical Point Pairing in Reeb Graphs. In: Bebis G, Boyle R, Parvin B, &al,
 eds. \emph{Advances in Visual Computing. Lecture Notes in Computer Science}.
 Springer International Publishing; 2019:99--113.
 \doi{10.1007/978-3-030-33720-9_8}
-
-\url{https://github.com/USFDataVisualization/ReebGraphPairing/}
 
 Carrière M & Oudot S (2018) "Structure and Stability of the One-Dimensional
 Mapper". \emph{Foundations of Computational Mathematics} 18(6): 1333--1396.

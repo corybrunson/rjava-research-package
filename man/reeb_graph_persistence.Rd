@@ -10,7 +10,7 @@ reeb_graph_persistence(x, method = "multi_pass", value = "value")
 \item{x}{A \code{\link{reeb_graph}} object.}
 
 \item{method}{Character; the pairing method to use. Matched to
-\code{"single_pass"} or \code{"multi_pass"}.}
+\code{"single_pass"} (the default) or \code{"multi_pass"}.}
 
 \item{value}{Character; the numerical value used by the persistent pairs.
 Matched to \code{"value"} (the default), \code{"index"}, or \code{"order"}.}
