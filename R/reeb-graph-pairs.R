@@ -7,14 +7,20 @@
 #'   methods from `ReebGraphPairing`. Ensure the Java Virtual Machine (JVM) is
 #'   initialized and the required class is available in the class path.
 #'
+#'   Note that the names of the output data frame use `lo_` and `hi_` prefixes,
+#'   in contrast to the Java source code that uses `birth_` and `death_`. This
+#'   is meant to distinguish the pairs and their metadata from [persistent
+#'   homology][reeb_graph_persistence], which is here reformulated following
+#'   Carrière & Oudot (2018).
+#'
 #' @param x A [`reeb_graph`][reeb_graph] object.
 #' @param method Character; the pairing method to use. Matched to
 #'   `"single_pass"` or `"multi_pass"`.
 #' @return A data frame containing eight output vectors returned by the Java
-#'   method: for the birth and death of each pair, the types (`character`),
-#'   values (`double`), indices (`integer`), and orders (`integer`). The data
-#'   frame has attributes `"method"` for the method used and `"elapsedTime"` for
-#'   the elapsed time.
+#'   method: for the low- (`lo_`) and high- (`hi_`) valued nodes of each pair,
+#'   the `type`s (`character`), `value`s (`double`), `index`es (`integer`), and
+#'   `order`s (`integer`). The data frame has attributes `"method"` for the
+#'   method used and `"elapsedTime"` for the elapsed time.
 #' @examples
 #' ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
 #' ( ex_rg <- read_reeb_graph(ex_sf) )
@@ -24,6 +30,7 @@
 #'
 #' @template ref-tu2019
 #' @template ref-reebgraphpairing
+#' @template ref-carriere2018
 #' @export
 reeb_graph_pairs <- function(x, method = "multi_pass") {
 
@@ -76,14 +83,14 @@ reeb_graph_pairs <- function(x, method = "multi_pass") {
 
   # assemble as data frame
   res <- data.frame(
-    birth_type  = vType,
-    death_type  = pType,
-    birth_value = vRealValues,
-    death_value = pRealValues,
-    birth_index = vGlobalIDs,
-    death_index = pGlobalIDs,
-    birth_order = vValues,
-    death_order = pValues
+    lo_type  = vType,
+    hi_type  = pType,
+    lo_value = vRealValues,
+    hi_value = pRealValues,
+    lo_index = vGlobalIDs,
+    hi_index = pGlobalIDs,
+    lo_order = vValues,
+    hi_order = pValues
   )
   attr(res, "method") <- method
   attr(res, "elapsedTime") <- elapsedTime

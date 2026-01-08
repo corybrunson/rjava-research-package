@@ -14,10 +14,10 @@ reeb_graph_pairs(x, method = "multi_pass")
 }
 \value{
 A data frame containing eight output vectors returned by the Java
-method: for the birth and death of each pair, the types (\code{character}),
-values (\code{double}), indices (\code{integer}), and orders (\code{integer}). The data
-frame has attributes \code{"method"} for the method used and \code{"elapsedTime"} for
-the elapsed time.
+method: for the low- (\code{lo_}) and high- (\code{hi_}) valued nodes of each pair,
+the \code{type}s (\code{character}), \code{value}s (\code{double}), \code{index}es (\code{integer}), and
+\code{order}s (\code{integer}). The data frame has attributes \code{"method"} for the
+method used and \code{"elapsedTime"} for the elapsed time.
 }
 \description{
 This function calls one of two methods, merge-pair and
@@ -27,6 +27,11 @@ propagate-and-pair, to pair the critical points of a Reeb graph.
 The function uses the \code{rJava} package to call either of two Java
 methods from \code{ReebGraphPairing}. Ensure the Java Virtual Machine (JVM) is
 initialized and the required class is available in the class path.
+
+Note that the names of the output data frame use \code{lo_} and \code{hi_} prefixes,
+in contrast to the Java source code that uses \code{birth_} and \code{death_}. This
+is meant to distinguish the pairs and their metadata from \link[=reeb_graph_persistence]{persistent homology}, which is here reformulated following
+Carrière & Oudot (2018).
 }
 \examples{
 ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
@@ -44,4 +49,8 @@ Springer International Publishing; 2019:99--113.
 \doi{10.1007/978-3-030-33720-9_8}
 
 \url{https://github.com/USFDataVisualization/ReebGraphPairing/}
+
+Carrière M & Oudot S (2018) "Structure and Stability of the One-Dimensional
+Mapper". \emph{Foundations of Computational Mathematics} 18(6): 1333--1396.
+\doi{10.1007/s10208-017-9370-z}
 }
