@@ -4,13 +4,13 @@
 \alias{reeb_graph_pairs}
 \title{Pair Reeb Graph Critical Points via Java}
 \usage{
-reeb_graph_pairs(x, method = "multi_pass")
+reeb_graph_pairs(x, method = c("single_pass", "multi_pass"))
 }
 \arguments{
 \item{x}{A \code{\link{reeb_graph}} object.}
 
 \item{method}{Character; the pairing method to use. Matched to
-\code{"single_pass"} or \code{"multi_pass"}.}
+\code{"single_pass"} (the default) or \code{"multi_pass"}.}
 }
 \value{
 A data frame containing the six output vectors returned by the Java
@@ -27,6 +27,13 @@ propagate-and-pair, to pair the critical points of a Reeb graph.
 The function uses the \code{rJava} package to call either of two Java
 methods from \code{ReebGraphPairing}. Ensure the Java Virtual Machine (JVM) is
 initialized and the required class is available in the class path.
+
+The Propagate-and-Pair algorithm (\code{"single_pass"}) performs both join and
+split merge tree operations along a single sweep through the Reeb graph. It
+was shown to be more efficient on most test data, and to scale better with
+graph size, than an algorithm (\code{"multi_pass"}) that pairs some types along
+the sublevel filtration and others along the superlevel filtration (Tu &al,
+2019).
 }
 \examples{
 ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
@@ -37,11 +44,11 @@ attr(ex_cp, "elapsedTime")
 
 }
 \references{
+\url{https://github.com/USFDataVisualization/ReebGraphPairing/}
+
 Tu J, Hajij M, Rosen P. Propagate and Pair: A Single-Pass Approach to
 Critical Point Pairing in Reeb Graphs. In: Bebis G, Boyle R, Parvin B, &al,
 eds. \emph{Advances in Visual Computing. Lecture Notes in Computer Science}.
 Springer International Publishing; 2019:99--113.
 \doi{10.1007/978-3-030-33720-9_8}
-
-\url{https://github.com/USFDataVisualization/ReebGraphPairing/}
 }

@@ -7,9 +7,16 @@
 #'   methods from `ReebGraphPairing`. Ensure the Java Virtual Machine (JVM) is
 #'   initialized and the required class is available in the class path.
 #'
+#'   The Propagate-and-Pair algorithm (`"single_pass"`) performs both join and
+#'   split merge tree operations along a single sweep through the Reeb graph. It
+#'   was shown to be more efficient on most test data, and to scale better with
+#'   graph size, than an algorithm (`"multi_pass"`) that pairs some types along
+#'   the sublevel filtration and others along the superlevel filtration (Tu &al,
+#'   2019).
+#'
 #' @param x A [`reeb_graph`][reeb_graph] object.
 #' @param method Character; the pairing method to use. Matched to
-#'   `"single_pass"` or `"multi_pass"`.
+#'   `"single_pass"` (the default) or `"multi_pass"`.
 #' @return A data frame containing the six output vectors returned by the Java
 #'   method: the birth and death values (`double`), birth and death indices
 #'   (`integer`), and birth and death orders (`integer`). The data frame has
@@ -22,10 +29,13 @@
 #' attr(ex_cp, "method")
 #' attr(ex_cp, "elapsedTime")
 #'
-#' @template ref-tu2019
 #' @template ref-reebgraphpairing
+#' @template ref-tu2019
 #' @export
-reeb_graph_pairs <- function(x, method = "multi_pass") {
+reeb_graph_pairs <- function(
+    x,
+    method = c("single_pass", "multi_pass")
+) {
 
   stopifnot(inherits(x, "reeb_graph"))
   # dynamically decide which pairing method to use based on the method
