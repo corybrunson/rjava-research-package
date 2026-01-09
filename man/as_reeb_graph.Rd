@@ -47,12 +47,11 @@ library(network)
 data("emon")
 mtsi <- emon$Cheyenne
 mtsi_reeb <- as_reeb_graph(mtsi, values = "Command.Rank.Score")
-# FIXME: Use the superlevel set filtration here.
-mtsi_cp <- reeb_graph_pairs(mtsi_reeb)
+mtsi_cp <- reeb_graph_pairs(mtsi_reeb, sublevel = FALSE)
 mtsi_names <- get.vertex.attribute(mtsi, "vertex.names")
 head(data.frame(
-  lower_org = mtsi_names[mtsi_cp[, "birth_index"] + 1],
-  upper_org = mtsi_names[mtsi_cp[, "death_index"] + 1]
+  lower_org = mtsi_names[mtsi_cp[, "birth_index"]],
+  upper_org = mtsi_names[mtsi_cp[, "death_index"]]
 ))
 \dontshow{\}) # examplesIf}
 }

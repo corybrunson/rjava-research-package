@@ -34,18 +34,18 @@ if (rlang::is_installed("network")) {
 
 # coercers from Reeb graphs work
 
-rg <- reeb_graph(values = c(3, 1, 2), edgelist = c( 1,2, 2,3 ) - 1)
+rg <- reeb_graph(values = c(3, 1, 2), edgelist = c( 1,2, 2,3 ))
 
 if (rlang::is_installed("igraph")) {
   g <- as_igraph(rg, values = "height")
-  expect_true(all( igraph::get.edgelist(g) == rg$edgelist + 1 ))
+  expect_true(all( igraph::get.edgelist(g) == rg$edgelist ))
   expect_false(is.null(igraph::vertex_attr(g, "height")))
   expect_true(all( igraph::vertex_attr(g, "height") == c(3, 1, 2) ))
 }
 
 if (rlang::is_installed("network")) {
   net <- as_network(rg, values = "height")
-  expect_true(all( as.matrix(net, matrix.type = "edgelist") == rg$edgelist + 1 ))
+  expect_true(all( as.matrix(net, matrix.type = "edgelist") == rg$edgelist ))
   expect_false(is.null(network::get.vertex.attribute(net, "height")))
   expect_true(all( network::get.vertex.attribute(net, "height") == c(3, 1, 2) ))
 }

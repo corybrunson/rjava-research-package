@@ -33,12 +33,11 @@
 #' data("emon")
 #' mtsi <- emon$Cheyenne
 #' mtsi_reeb <- as_reeb_graph(mtsi, values = "Command.Rank.Score")
-#' # FIXME: Use the superlevel set filtration here.
-#' mtsi_cp <- reeb_graph_pairs(mtsi_reeb)
+#' mtsi_cp <- reeb_graph_pairs(mtsi_reeb, sublevel = FALSE)
 #' mtsi_names <- get.vertex.attribute(mtsi, "vertex.names")
 #' head(data.frame(
-#'   lower_org = mtsi_names[mtsi_cp[, "birth_index"] + 1],
-#'   upper_org = mtsi_names[mtsi_cp[, "death_index"] + 1]
+#'   lower_org = mtsi_names[mtsi_cp[, "birth_index"]],
+#'   upper_org = mtsi_names[mtsi_cp[, "death_index"]]
 #' ))
 
 #' @export
@@ -60,7 +59,7 @@ as_reeb_graph.igraph <- function(x, values = NULL, ...) {
     values <- igraph::vertex_attr(x, values)
   }
 
-  reeb_graph(values, igraph::as_edgelist(x) - 1L)
+  reeb_graph(values, igraph::as_edgelist(x))
 }
 
 #' @rdname reeb_graph
@@ -84,7 +83,7 @@ as_reeb_graph.network <- function(x, values = NULL, ...) {
     values <- network::get.vertex.attribute(x, values)
   }
 
-  reeb_graph(values, as.matrix(x, matrix.type = "edgelist") - 1L)
+  reeb_graph(values, as.matrix(x, matrix.type = "edgelist"))
 }
 
 #' @rdname reeb_graph
@@ -94,7 +93,7 @@ as_igraph <- function(x, ...) UseMethod("as_igraph")
 #' @rdname reeb_graph
 #' @export
 as_igraph.reeb_graph <- function(x, values = "value", ...) {
-  g <- igraph::graph_from_edgelist(x$edgelist + 1L)
+  g <- igraph::graph_from_edgelist(x$edgelist)
   igraph::vertex_attr(g, values) <- x$values
   g
 }
@@ -106,7 +105,7 @@ as_network <- function(x, ...) UseMethod("as_network")
 #' @rdname reeb_graph
 #' @export
 as_network.reeb_graph <- function(x, values = "value", ...) {
-  net <- network::network(x$edgelist + 1L, matrix.type = "edgelist")
+  net <- network::network(x$edgelist, matrix.type = "edgelist")
   network::set.vertex.attribute(net, values, x$values)
   net
 }
