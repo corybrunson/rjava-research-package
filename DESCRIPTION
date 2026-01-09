@@ -40,7 +40,8 @@ Description: Interface
 Depends: R (>= 2.7.0), rJava (>= 0.5-0)
 Suggests:
     tinytest,
-    igraph
+    igraph,
+    network
 SystemRequirements: Java (>= 1.5)
 License: GPL-3
 Packaged: 2014-09-04 13:17:36 UTC; tverbeke
