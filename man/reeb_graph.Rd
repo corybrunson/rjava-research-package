@@ -2,6 +2,11 @@
 % Please edit documentation in R/as-reeb-graph.R, R/class-reeb-graph.R
 \name{as_reeb_graph.igraph}
 \alias{as_reeb_graph.igraph}
+\alias{as_reeb_graph.network}
+\alias{as_igraph}
+\alias{as_igraph.reeb_graph}
+\alias{as_network}
+\alias{as_network.reeb_graph}
 \alias{reeb_graph}
 \alias{print.reeb_graph}
 \alias{format.reeb_graph}
@@ -9,6 +14,16 @@
 \title{An S3 class and constructors for Reeb graphs}
 \usage{
 \method{as_reeb_graph}{igraph}(x, values = NULL, ...)
+
+\method{as_reeb_graph}{network}(x, values = NULL, ...)
+
+as_igraph(x, ...)
+
+\method{as_igraph}{reeb_graph}(x, values = "value", ...)
+
+as_network(x, ...)
+
+\method{as_network}{reeb_graph}(x, values = "value", ...)
 
 reeb_graph(values, edgelist)
 

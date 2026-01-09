@@ -11,9 +11,12 @@ as_reeb_graph(x, ...)
 
 \item{...}{Additional arguments passed to methods.}
 
-\item{values}{A character value or a numeric vector; the node attribute to
-use as the Reeb graph value function, or the values in order of node
-indices. If \code{NULL} (the default), the first numeric node attribute is used.}
+\item{values}{For coercion \emph{to} class \code{"reeb_graph"}, a character value or a
+numeric vector; the node attribute to use as the Reeb graph value function,
+or the values in order of node indices. If \code{NULL} (the default), the first
+numeric node attribute is used. For coercion \emph{from} class \code{"reeb_graph"}, a
+character value; the name of the node attribute in which to store the Reeb
+graph value function.}
 }
 \value{
 A \link{reeb_graph} object.
@@ -24,13 +27,32 @@ Coerce objects to \link{reeb_graph}-class objects.
 \details{
 The \code{as_reeb_graph()} methods require a network (mathematical graph)
 structure and a real-valued function on the vertex set.
+
+For coercion between external network classes, use the \code{intergraph}
+package.
 }
 \examples{
+\dontshow{if (rlang::is_installed("igraph")) withAutoprint(\{ # examplesIf}
 library(igraph)
 ( g <- make_kautz_graph(2, 1) )
-( l <- layout_nicely(g) )
-plot(g, layout = l)
-( rg <- as_reeb_graph(g, l[, 1]) )
-# TODO: Coerce back to 'igraph' class and plot using Sugiyama layout.
-
+l_g <- layout_with_fr(g)
+plot(g, layout = l_g)
+( rg <- as_reeb_graph(g, l_g[, 1]) )
+vertex_attr(g, "height") <- rg$value
+l_rg <- layout_with_sugiyama(g, V(g)$height)
+plot(g, layout = l_rg)
+\dontshow{\}) # examplesIf}
+\dontshow{if (rlang::is_installed("network")) withAutoprint(\{ # examplesIf}
+library(network)
+data("emon")
+mtsi <- emon$Cheyenne
+mtsi_reeb <- as_reeb_graph(mtsi, values = "Command.Rank.Score")
+# FIXME: Use the superlevel set filtration here.
+mtsi_cp <- reeb_graph_pairs(mtsi_reeb)
+mtsi_names <- get.vertex.attribute(mtsi, "vertex.names")
+head(data.frame(
+  lower_org = mtsi_names[mtsi_cp[, "birth_index"] + 1],
+  upper_org = mtsi_names[mtsi_cp[, "death_index"] + 1]
+))
+\dontshow{\}) # examplesIf}
 }
