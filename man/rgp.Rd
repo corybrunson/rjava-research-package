@@ -14,7 +14,7 @@ Interface to the `ReebGraphPairing` Java program \doi{10.1007/978-3-030-33720-9_
 Authors:
 \itemize{
   \item Shubham Singh \email{shubhamus16091998@example.com}
-  \item Jason Cory Brunson \email{cornelioid@gmail.com} (\href{https://orcid.org/0000-0003-3126-9494}{ORCID}) [laboratory director]
+  \item Jason Cory Brunson \email{cornelioid@gmail.com} (\href{https://orcid.org/0000-0003-3126-9494}{ORCID})
 }
 
 Other contributors:

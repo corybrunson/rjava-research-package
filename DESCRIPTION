@@ -11,12 +11,12 @@ Authors@R: c(
     person(
       "Shubham", "Singh",
       email = "shubhamus16091998@example.com",
-      role = "aut"
+      role = c("aut")
     ),
     person(
       "Jason Cory", "Brunson",
       email = "cornelioid@gmail.com",
-      role = c("aut", "ldr"),
+      role = c("aut"),
       comment = c(ORCID = "0000-0003-3126-9494")
     ),
     person(
