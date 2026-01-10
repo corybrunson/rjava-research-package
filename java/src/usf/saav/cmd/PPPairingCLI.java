@@ -10,6 +10,8 @@ import usf.saav.topology.reebgraph.pairing.PropagateAndPair;
 public class PPPairingCLI {
 
     static ArrayList<ReebGraph> rg = null;
+    static List<String> pTypes = new ArrayList<>();
+    static List<String> vTypes = new ArrayList<>();
     static List<Float> pValues = new ArrayList<>();
     static  List<Float> vValues = new ArrayList<>();
     static  List<Float> pRealValues = new ArrayList<>();
@@ -25,7 +27,7 @@ public class PPPairingCLI {
 
 
 	public static void main(String[] args) {
-		
+
 		if( args.length == 0 ) {
 			System.out.println("");
 			System.out.println("   ###################################################################################");
@@ -68,6 +70,8 @@ public class PPPairingCLI {
             elapsedTime = result.getElapsedTime();
 
             ResultList resultList = TestResults.getResultList(rg);
+            pTypes = resultList.pTypes;
+            vTypes = resultList.vTypes;
             pValues = resultList.pValues;
             vValues = resultList.vValues;
             pRealValues = resultList.pRealValues;
@@ -93,6 +97,21 @@ public class PPPairingCLI {
             arr[i] = list.get(i);
         }
         return arr;
+    }
+
+    private static String[] convertStringListToArray(List<String> list) {
+        String[] arr = new String[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            arr[i] = list.get(i);
+        }
+        return arr;
+    }
+
+    public static String[] getPTypes() {
+        return convertStringListToArray(pTypes);
+    }
+    public static String[] getVTypes() {
+        return convertStringListToArray(vTypes);
     }
 
     public static float[] getPRealValues() {

@@ -14,17 +14,23 @@
 #'   the sublevel filtration and others along the superlevel filtration (Tu &al,
 #'   2019).
 #'
+#'   Note that the names of the output data frame use `lo_` and `hi_` prefixes,
+#'   in contrast to the Java source code that uses `birth_` and `death_`. This
+#'   is meant to distinguish the pairs and their metadata from [persistent
+#'   homology][reeb_graph_persistence], which is here reformulated following
+#'   Carrière & Oudot (2018).
+#'
 #' @param x A [`reeb_graph`][reeb_graph] object.
 #' @param sublevel Logical; whether to take the sublevel set filtration (`TRUE`,
 #'   the default) or else the superlevel set filtration (via reversing
 #'   `x$values` before paring critical points.
 #' @param method Character; the pairing method to use. Matched to
 #'   `"single_pass"` (the default) or `"multi_pass"`.
-#' @return A data frame containing the six output vectors returned by the Java
-#'   method: the birth and death values (`double`), birth and death indices
-#'   (`integer`), and birth and death orders (`integer`). The data frame has
-#'   attributes `"method"` for the method used and `"elapsedTime"` for the
-#'   elapsed time.
+#' @return A data frame containing eight output vectors returned by the Java
+#'   method: for the low- (`lo_`) and high- (`hi_`) valued nodes of each pair,
+#'   the `type`s (`character`), `value`s (`double`), `index`es (`integer`), and
+#'   `order`s (`integer`). The data frame has attributes `"method"` for the
+#'   method used and `"elapsedTime"` for the elapsed time.
 #' @examples
 #' ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
 #' ( ex_rg <- read_reeb_graph(ex_sf) )
@@ -36,6 +42,7 @@
 #'
 #' @template ref-reebgraphpairing
 #' @template ref-tu2019
+#' @template ref-carriere2018
 #' @export
 reeb_graph_pairs <- function(
     x,
@@ -84,6 +91,8 @@ reeb_graph_pairs <- function(
   # rlist <- .jcall(java_file_path, "[Ljava/lang/String;", "getFinalGraph")
 
   # retrieve the separate lists
+  pType <- .jcall(java_file_path, "[S", "getPTypes")
+  vType <- .jcall(java_file_path, "[S", "getVTypes")
   pRealValues <- .jcall(java_file_path, "[F", "getPRealValues")
   vRealValues <- .jcall(java_file_path, "[F", "getVRealValues")
   pValues <- .jcall(java_file_path, "[F", "getPValues") + 1L
@@ -100,12 +109,14 @@ reeb_graph_pairs <- function(
 
   # assemble as data frame
   res <- data.frame(
-    birth_value = vRealValues,
-    death_value = pRealValues,
-    birth_index = vGlobalIDs,
-    death_index = pGlobalIDs,
-    birth_order = vValues,
-    death_order = pValues
+    lo_type  = vType,
+    hi_type  = pType,
+    lo_value = vRealValues,
+    hi_value = pRealValues,
+    lo_index = vGlobalIDs,
+    hi_index = pGlobalIDs,
+    lo_order = vValues,
+    hi_order = pValues
   )
   attr(res, "method") <- method
   attr(res, "elapsedTime") <- elapsedTime

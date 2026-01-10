@@ -169,6 +169,8 @@ public class TestResults {
         for (ReebGraphVertex v : verts0) {
             ReebGraphVertex p = (ReebGraphVertex) v.getPartner();
             if (p == null) {
+                resultList.pTypes.add("NULL");
+                resultList.vTypes.add(v.getType().name());
                 resultList.pValues.add(-1.0f);
                 resultList.vValues.add(-1.0f);
                 resultList.pRealValues.add(-1.0f);
@@ -176,6 +178,8 @@ public class TestResults {
                 resultList.vGlobalIDs.add(v.getGlobalID());
             } else {
                 if (v.value() > p.value()) continue;
+                resultList.pTypes.add(p.getType().name());
+                resultList.vTypes.add(v.getType().name());
                 resultList.pValues.add(p.value());
                 resultList.vValues.add(v.value());
                 resultList.pRealValues.add(p.getRealValue());

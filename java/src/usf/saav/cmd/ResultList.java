@@ -3,6 +3,8 @@ import java.util.*;
 
 public class ResultList {
 
+    List<String> pTypes;
+    List<String> vTypes;
     List<Float> pValues;
     List<Float> vValues;
     List<Float> pRealValues;
@@ -11,12 +13,28 @@ public class ResultList {
     List<Integer> vGlobalIDs;
 
     public ResultList() {
+        pTypes = new ArrayList<>();
+        vTypes = new ArrayList<>();
         pValues = new ArrayList<>();
         vValues = new ArrayList<>();
         pRealValues = new ArrayList<>();
         vRealValues = new ArrayList<>();
         pGlobalIDs = new ArrayList<>();
         vGlobalIDs = new ArrayList<>();
+    }
+
+    public List<String> getpTypes() {
+        return pTypes;
+    }
+    public void setpTypes(List<String> pTypes) {
+        this.pTypes = pTypes;
+    }
+
+    public List<String> getvTypes() {
+        return vTypes;
+    }
+    public void setvTypes(List<String> vTypes) {
+        this.vTypes = vTypes;
     }
 
     public List<Float> getpValues() {
