@@ -4,65 +4,66 @@
 \alias{reeb_graph_pairs}
 \title{Pair Reeb Graph Critical Points via Java}
 \usage{
-reeb_graph_pairs(x, method = "multi_pass")
+reeb_graph_pairs(x, sublevel = TRUE, method = c("single_pass", "multi_pass"))
 }
 \arguments{
-\item{name}{description}
+\item{x}{A \code{\link{reeb_graph}} object.}
+
+\item{sublevel}{Logical; whether to take the sublevel set filtration (\code{TRUE},
+the default) or else the superlevel set filtration (via reversing
+\code{x$values} before paring critical points.}
+
+\item{method}{Character; the pairing method to use. Matched to
+\code{"single_pass"} (the default) or \code{"multi_pass"}.}
 }
 \value{
-A data frame containing the six output vectors returned by the Java
-method: the birth and death values (\code{double}), birth and death indices
-(\code{integer}), and birth and death orders (\code{integer}). The data frame has an
-attribute \code{"elapsedTime"} for the elapsed time.
+A data frame containing eight output vectors returned by the Java
+method: for the low- (\code{lo_}) and high- (\code{hi_}) valued nodes of each pair,
+the \code{type}s (\code{character}), \code{value}s (\code{double}), \code{index}es (\code{integer}), and
+\code{order}s (\code{integer}). The data frame has attributes \code{"method"} for the
+method used and \code{"elapsedTime"} for the elapsed time.
 }
 \description{
 This function calls one of two methods, merge-pair and
-propagate-and-pair, to compute the extended persistent homology of a Reeb
-graph.
+propagate-and-pair, to pair the critical points of a Reeb graph.
 }
 \details{
 The function uses the \code{rJava} package to call either of two Java
 methods from \code{ReebGraphPairing}. Ensure the Java Virtual Machine (JVM) is
 initialized and the required class is available in the class path.
+
+The Propagate-and-Pair algorithm (\code{"single_pass"}) performs both join and
+split merge tree operations along a single sweep through the Reeb graph. It
+was shown to be more efficient on most test data, and to scale better with
+graph size, than an algorithm (\code{"multi_pass"}) that pairs some types along
+the sublevel filtration and others along the superlevel filtration (Tu &al,
+2019).
+
+Note that the names of the output data frame use \code{lo_} and \code{hi_} prefixes,
+in contrast to the Java source code that uses \code{birth_} and \code{death_}. This
+is meant to distinguish the pairs and their metadata from \link[=reeb_graph_persistence]{persistent homology}, which is here reformulated following
+Carrière & Oudot (2018).
 }
 \examples{
-( ex_rg <- read_reeb_graph("files/running_example_reeb_graph.txt") )
-( ex_ph <- reeb_graph_pairs(ex_rg) )
-attr(ex_ph, "elapsedTime")
+ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
+( ex_rg <- read_reeb_graph(ex_sf) )
+( ex_cp <- reeb_graph_pairs(ex_rg) )
+attr(ex_cp, "method")
+attr(ex_cp, "elapsedTime")
 
-# Reeb graph data
-vertex_values <- c(
-  0.0,
-  1.3862943611198906, 3.295836866004329, 5.545177444479562, 8.047189562170502,
-  10.75055681536833, 13.621371043387192, 16.635532333438686, 19.775021196025975,
-  23.02585092994046, 26.376848000782076, 29.818879797456006, 33.34434164699998,
-  36.94680261461362, 40.62075301653315, 44.3614195558365, 48.16462684895568,
-  52.02669164213096, 55.94434060416236, 59.914645471079815, 63.93497119219188,
-  68.00293397388296, 72.11636696637044, 76.2732919283507, 80.47189562170502,
-  84.71050998855854, 88.9875953821169, 93.30172628490571, 97.65157906960775,
-  102.03592144986466, 106.45360333903953, 110.90354888959125, 115.38474952839385,
-  119.89625783694949, 124.43718215212947, 129.00668178441995, 133.6039627678363,
-  138.22827406960266, 142.8789041990562, 147.55517816455745, 152.25645473487663
-)
-edges_from <- c(
-   0,  0,  1,  2,  2,  3,  5,  6,  6,  7,
-   8,  9, 10, 10, 12, 13, 14, 14, 17, 18,
-  18, 20, 21, 22, 22, 23, 25, 26, 26, 27,
-  29, 30, 30, 31, 33, 34, 34, 37, 38, 38
-)
-edges_to <- c(
-   1, 13,  2,  3,  4,  5,  6,  8,  7, 17,
-   9, 10, 11, 12, 29, 14, 16, 15, 18, 19,
-  20, 21, 22, 24, 23, 25, 26, 27, 28, 37,
-  30, 32, 31, 33, 34, 35, 36, 38, 40, 39
-)
-# Reeb graph object
-rg <- reeb_graph(vertex_values, cbind( edges_to, edges_from ))
+reeb_graph_pairs(ex_rg, sublevel = FALSE)
 
-# merge pairing
-( ph1 <- reeb_graph_pairs(rg, "single_pass") )
-# propagate pairing
-( ph2 <- reeb_graph_pairs(rg, "multi_pass") )
-# check equality
-identical(`attributes<-`(ph1, NULL), `attributes<-`(ph2, NULL))
+}
+\references{
+\url{https://github.com/USFDataVisualization/ReebGraphPairing/}
+
+Tu J, Hajij M, Rosen P. Propagate and Pair: A Single-Pass Approach to
+Critical Point Pairing in Reeb Graphs. In: Bebis G, Boyle R, Parvin B, &al,
+eds. \emph{Advances in Visual Computing. Lecture Notes in Computer Science}.
+Springer International Publishing; 2019:99--113.
+\doi{10.1007/978-3-030-33720-9_8}
+
+Carrière M & Oudot S (2018) "Structure and Stability of the One-Dimensional
+Mapper". \emph{Foundations of Computational Mathematics} 18(6): 1333--1396.
+\doi{10.1007/s10208-017-9370-z}
 }
