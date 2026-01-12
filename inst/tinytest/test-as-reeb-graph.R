@@ -32,20 +32,28 @@ if (rlang::is_installed("network")) {
   expect_error(as_reeb_graph(net, values = "valid"), pattern = "hyper")
 }
 
+# coercers to Reeb graphs work
+
+
+
 # coercers from Reeb graphs work
 
-rg <- reeb_graph(values = c(3, 1, 2), edgelist = c( 1,2, 2,3 ))
+ht <- c(3, 1, 2)
+names(ht) <- letters[1:3]
+rg <- reeb_graph(values = ht, edgelist = c( 1,2, 2,3 ))
 
 if (rlang::is_installed("igraph")) {
   g <- as_igraph(rg, values = "height")
-  expect_true(all( igraph::as_edgelist(g) == rg$edgelist ))
+  expect_true(all( igraph::as_edgelist(g, names = FALSE) == rg$edgelist ))
   expect_false(is.null(igraph::vertex_attr(g, "height")))
-  expect_true(all( igraph::vertex_attr(g, "height") == c(3, 1, 2) ))
+  expect_identical(igraph::vertex_attr(g, "height"), unname(ht))
+  expect_identical(igraph::vertex_attr(g, "name"), names(ht))
 }
 
 if (rlang::is_installed("network")) {
   net <- as_network(rg, values = "height")
   expect_true(all( as.matrix(net, matrix.type = "edgelist") == rg$edgelist ))
   expect_false(is.null(network::get.vertex.attribute(net, "height")))
-  expect_true(all( network::get.vertex.attribute(net, "height") == c(3, 1, 2) ))
+  expect_identical(network::get.vertex.attribute(net, "height"), unname(ht))
+  expect_identical(network::get.vertex.attribute(net, "vertex.names"), names(ht))
 }

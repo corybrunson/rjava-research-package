@@ -33,12 +33,11 @@ reeb_graph_pairs(x, ...)
 
 \item{...}{Additional arguments passed to methods.}
 
-\item{values}{For coercion \emph{to} class \code{"reeb_graph"}, a character value or a
-numeric vector; the node attribute to use as the Reeb graph value function,
-or the values in order of node indices. If \code{NULL} (the default), the first
-numeric node attribute is used. For coercion \emph{from} class \code{"reeb_graph"}, a
-character value; the name of the node attribute in which to store the Reeb
-graph value function.}
+\item{values}{For coercion \emph{to} class \code{reeb_graph}, a character value; the
+node attribute to use as the Reeb graph value function. If \code{NULL} (the
+default), the first numeric node attribute is used. For coercion \emph{from}
+class \code{reeb_graph}, a character value; the name of the node attribute in
+which to store the Reeb graph value function.}
 
 \item{sublevel}{Logical; whether to use the sublevel set filtration (\code{TRUE},
 the default) or else the superlevel set filtration (via reversing

@@ -13,17 +13,17 @@
 \alias{read_reeb_graph}
 \title{An S3 class and constructors for Reeb graphs}
 \usage{
-\method{as_reeb_graph}{igraph}(x, values = NULL, ...)
+\method{as_reeb_graph}{igraph}(x, values = NULL, names = NULL, ...)
 
-\method{as_reeb_graph}{network}(x, values = NULL, ...)
+\method{as_reeb_graph}{network}(x, values = NULL, names = NULL, ...)
 
 as_igraph(x, ...)
 
-\method{as_igraph}{reeb_graph}(x, values = "value", ...)
+\method{as_igraph}{reeb_graph}(x, values = "value", names = "name", ...)
 
 as_network(x, ...)
 
-\method{as_network}{reeb_graph}(x, values = "value", ...)
+\method{as_network}{reeb_graph}(x, values = "value", names = "vertex.names", ...)
 
 reeb_graph(values, edgelist)
 

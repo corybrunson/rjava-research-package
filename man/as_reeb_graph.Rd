@@ -11,12 +11,16 @@ as_reeb_graph(x, ...)
 
 \item{...}{Additional arguments passed to methods.}
 
-\item{values}{For coercion \emph{to} class \code{"reeb_graph"}, a character value or a
-numeric vector; the node attribute to use as the Reeb graph value function,
-or the values in order of node indices. If \code{NULL} (the default), the first
-numeric node attribute is used. For coercion \emph{from} class \code{"reeb_graph"}, a
-character value; the name of the node attribute in which to store the Reeb
-graph value function.}
+\item{names}{For coercion \emph{to} class \code{reeb_graph}, a character value; the
+node attribute to use as the Reeb graph node names. If \code{NULL}, names are
+omitted. For coercion \emph{from} class \code{reeb_graph}, a character value; the
+name of the node attribute in which to store the Reeb graph node names.}
+
+\item{values}{For coercion \emph{to} class \code{reeb_graph}, a character value; the
+node attribute to use as the Reeb graph value function. If \code{NULL} (the
+default), the first numeric node attribute is used. For coercion \emph{from}
+class \code{reeb_graph}, a character value; the name of the node attribute in
+which to store the Reeb graph value function.}
 }
 \value{
 A \link{reeb_graph} object.
