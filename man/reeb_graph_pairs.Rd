@@ -2,12 +2,43 @@
 % Please edit documentation in R/reeb-graph-pairs.R
 \name{reeb_graph_pairs}
 \alias{reeb_graph_pairs}
+\alias{reeb_graph_pairs.default}
+\alias{reeb_graph_pairs.igraph}
+\alias{reeb_graph_pairs.network}
+\alias{reeb_graph_pairs.reeb_graph}
 \title{Pair Reeb Graph Critical Points via Java}
 \usage{
-reeb_graph_pairs(x, sublevel = TRUE, method = c("single_pass", "multi_pass"))
+reeb_graph_pairs(x, ...)
+
+\method{reeb_graph_pairs}{default}(x, ...)
+
+\method{reeb_graph_pairs}{igraph}(
+  x,
+  values = NULL,
+  sublevel = TRUE,
+  method = c("single_pass", "multi_pass")
+)
+
+\method{reeb_graph_pairs}{network}(
+  x,
+  values = NULL,
+  sublevel = TRUE,
+  method = c("single_pass", "multi_pass")
+)
+
+\method{reeb_graph_pairs}{reeb_graph}(x, sublevel = TRUE, method = c("single_pass", "multi_pass"))
 }
 \arguments{
 \item{x}{A \code{\link{reeb_graph}} object.}
+
+\item{...}{Additional arguments passed to methods.}
+
+\item{values}{For coercion \emph{to} class \code{"reeb_graph"}, a character value or a
+numeric vector; the node attribute to use as the Reeb graph value function,
+or the values in order of node indices. If \code{NULL} (the default), the first
+numeric node attribute is used. For coercion \emph{from} class \code{"reeb_graph"}, a
+character value; the name of the node attribute in which to store the Reeb
+graph value function.}
 
 \item{sublevel}{Logical; whether to use the sublevel set filtration (\code{TRUE},
 the default) or else the superlevel set filtration (via reversing

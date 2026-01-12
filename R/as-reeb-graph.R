@@ -105,7 +105,7 @@ as_network <- function(x, ...) UseMethod("as_network")
 #' @rdname reeb_graph
 #' @export
 as_network.reeb_graph <- function(x, values = "value", ...) {
-  net <- network::network(x$edgelist, matrix.type = "edgelist")
+  net <- network::network(x$edgelist, matrix.type = "edgelist", multiple = TRUE)
   network::set.vertex.attribute(net, values, x$values)
   net
 }

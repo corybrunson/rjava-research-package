@@ -24,6 +24,7 @@
 #'   types, values, indices, and orders of persistent pairs.
 #'
 #' @param x A [`reeb_graph`][reeb_graph] object.
+#' @inheritParams as_reeb_graph
 #' @param sublevel Logical; whether to use the sublevel set filtration (`TRUE`,
 #'   the default) or else the superlevel set filtration (via reversing
 #'   `x$values` before paring critical points.
@@ -74,14 +75,48 @@
 #' @template ref-tu2019
 #' @template ref-carriere2018
 #' @export
-reeb_graph_pairs <- function(
+reeb_graph_pairs <- function(x, ...) UseMethod("reeb_graph_pairs")
+
+#' @rdname reeb_graph_pairs
+#' @export
+reeb_graph_pairs.default <- function(x, ...) {
+  stop(paste0(
+    "No `reeb_graph_pairs()` method for class(es) '",
+    paste(class(x), collapse = "', '"),
+    "'."
+  ))
+}
+
+reeb_graph_pairs_graph <- function(
+    x,
+    values = NULL,
+    sublevel = TRUE,
+    method = c("single_pass", "multi_pass")
+) {
+  x <- as_reeb_graph(x, values = values)
+
+  reeb_graph_pairs.reeb_graph(
+    x,
+    sublevel = sublevel, method = method
+  )
+}
+
+#' @rdname reeb_graph_pairs
+#' @export
+reeb_graph_pairs.igraph <- reeb_graph_pairs_graph
+
+#' @rdname reeb_graph_pairs
+#' @export
+reeb_graph_pairs.network <- reeb_graph_pairs_graph
+
+#' @rdname reeb_graph_pairs
+#' @export
+reeb_graph_pairs.reeb_graph <- function(
     x,
     sublevel = TRUE,
     method = c("single_pass", "multi_pass")
 ) {
-  stopifnot(inherits(x, "reeb_graph"))
-
-  # reverse value function
+  # reverse value function for superlevel set persistence
   if (! is.logical(sublevel) || is.na(sublevel))
     stop("`sublevel` must be `TRUE` or `FALSE`.")
   if (! sublevel) x$values <- -x$values

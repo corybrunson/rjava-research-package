@@ -12,9 +12,11 @@
 #'   written for [phutil::as_persistence()].
 #'
 #' @param x A [`reeb_graph`][reeb_graph] or
-#'   [`reeb_graph_pairs`][reeb_graph_pairs] object.
+#'   [`reeb_graph_pairs`][reeb_graph_pairs] object, or an object that can be
+#'   [coerced to class "reeb_graph"][as_reeb_graph].
+#' @inheritParams as_reeb_graph
 #' @inheritParams reeb_graph_pairs
-#' @param value Character; the numerical value used by the persistent pairs.
+#' @param scale Character; the scale parameter used by the persistent pairs.
 #'   Matched to `"value"` (the default), `"index"`, or `"order"`.
 #' @return A [phutil::persistence] object.
 #' @examples
@@ -28,35 +30,69 @@
 #' ( t10 <- read_reeb_graph(t10_f) )
 #' ( t10_ph <- reeb_graph_persistence(t10) )
 #' phutil::get_pairs(t10_ph, dimension = 0)
-#' ( t10_ph <- reeb_graph_persistence(t10, value = "index") )
+#' ( t10_ph <- reeb_graph_persistence(t10, scale = "index") )
 #' phutil::get_pairs(t10_ph, dimension = 0)
-#' ( t10_ph <- reeb_graph_persistence(t10, value = "order") )
+#' ( t10_ph <- reeb_graph_persistence(t10, scale = "order") )
 #' phutil::get_pairs(t10_ph, dimension = 0)
 #'
 #' @export
-reeb_graph_persistence <- function(
+reeb_graph_persistence <- function(x, ...) UseMethod("reeb_graph_persistence")
+
+#' @rdname reeb_graph_persistence
+#' @export
+reeb_graph_persistence.default <- function(x, ...) {
+  stop(paste0(
+    "No `reeb_graph_persistence()` method for class(es) '",
+    paste(class(x), collapse = "', '"),
+    "'."
+  ))
+}
+
+reeb_graph_persistence_graph <- function(
     x,
+    values = NULL,
     sublevel = TRUE,
     method = c("single_pass", "multi_pass"),
-    value = c("value", "index", "order")
+    scale = c("value", "index", "order")
 ) {
-  stopifnot(inherits(x, "reeb_graph"))
+  x <- as_reeb_graph(x, values = values)
 
-  # pair critical points
-  cp <- reeb_graph_pairs(x, sublevel = sublevel, method = method)
-
-  # convert critical pairs to persistent homology
-  crit_pairs_to_persistence(cp, value = value)
+  reeb_graph_persistence.reeb_graph(
+    x,
+    sublevel = sublevel, method = method, scale = scale
+  )
 }
 
 #' @rdname reeb_graph_persistence
 #' @export
-crit_pairs_to_persistence <- function(
+reeb_graph_persistence.igraph <- reeb_graph_persistence_graph
+
+#' @rdname reeb_graph_persistence
+#' @export
+reeb_graph_persistence.network <- reeb_graph_persistence_graph
+
+#' @rdname reeb_graph_persistence
+#' @export
+reeb_graph_persistence.reeb_graph <- function(
     x,
-    value = c("value", "index", "order")
+    sublevel = TRUE,
+    method = c("single_pass", "multi_pass"),
+    scale = c("value", "index", "order")
 ) {
-  stopifnot(inherits(x, "reeb_graph_pairs"))
-  value <- match.arg(tolower(value), c("value", "index", "order"))
+  # pair critical points
+  cp <- reeb_graph_pairs(x, sublevel = sublevel, method = method)
+
+  # convert critical pairs to persistent homology
+  reeb_graph_persistence.reeb_graph_pairs(cp, scale = scale)
+}
+
+#' @rdname reeb_graph_persistence
+#' @export
+reeb_graph_persistence.reeb_graph_pairs <- function(
+    x,
+    scale = c("value", "index", "order")
+) {
+  scale <- match.arg(tolower(scale), c("value", "index", "order"))
 
   # degrees of persistent features
   ph_deg0 <- x$lo_type == "LEAF_MIN"
@@ -64,7 +100,7 @@ crit_pairs_to_persistence <- function(
   ph_ext <- ( ph_deg0 & x$hi_type == "LEAF_MAX" ) |
     ( ! ph_deg0 & x$hi_type == "DOWNFORK" )
   # low- and high-value columns
-  lo_hi <- match(paste0(c("lo", "hi"), "_", value), names(x))
+  lo_hi <- match(paste0(c("lo", "hi"), "_", scale), names(x))
 
   # degree-0 features; ordinary part (increasing)
   ord_0 <- ph_deg0 & ( ! ph_ext )
@@ -84,7 +120,7 @@ crit_pairs_to_persistence <- function(
     rbind(ph_ord_0, ph_ext_0),
     rbind(ph_rel_1, ph_ext_1)
   ))
-  ph$metadata$engine <- "rph::reeb_graph_pairs"
+  ph$metadata$engine <- "rgp::reeb_graph_persistence"
   ph$metadata$filtration <- paste0(
     "extended Reeb (",
     if (attr(x, "sublevel")) "sublevel" else "superlevel",
@@ -93,7 +129,7 @@ crit_pairs_to_persistence <- function(
   # FIXME: Encode parameters so that they print with quotes.
   ph$metadata$parameters <- list(
     method = attr(x, "method"),
-    value = value
+    scale = scale
   )
 
   ph
