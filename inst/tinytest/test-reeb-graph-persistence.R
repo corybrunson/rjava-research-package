@@ -4,9 +4,8 @@ f <- system.file("extdata", "running_example.txt", package = "rgp")
 x <- read_reeb_graph(f)
 # critical point pairs
 p <- reeb_graph_pairs(x, method = "single")
-p_ <- p[order(p$lo_index, -p$hi_index), ]
 expect_equal(
-  unname(as.matrix(p_[, c("lo_index", "hi_index")])),
+  unname(p$index[order(p$index[, 1], -p$index[, 2]), ]),
   cbind(
     # pairs in height (value) order
     c( 0,  1,  3,  4,  5,  7,  8, 13),
@@ -15,9 +14,8 @@ expect_equal(
 )
 # persistent pairs
 ph <- reeb_graph_persistence(x, method = "single")
-ph_ <- lapply(ph$pairs, function(x) x[order(x[, 1]), ])
 expect_equal(
-  ph_,
+  lapply(ph$pairs, function(x) x[order(x[, 1]), ]),
   # persistence diagrams in birth order
   list(
     cbind(

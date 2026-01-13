@@ -95,41 +95,41 @@ reeb_graph_persistence.reeb_graph_pairs <- function(
   scale <- match.arg(tolower(scale), c("value", "index", "order"))
 
   # degrees of persistent features
-  ph_deg0 <- x$lo_type == "LEAF_MIN"
+  ph_deg0 <- x$type[, 1L] == "LEAF_MIN"
   # extended persistent features
-  ph_ext <- ( ph_deg0 & x$hi_type == "LEAF_MAX" ) |
-    ( ! ph_deg0 & x$hi_type == "DOWNFORK" )
-  # low- and high-value columns
-  lo_hi <- match(paste0(c("lo", "hi"), "_", scale), names(x))
+  ph_ext <- ( ph_deg0 & x$type[, 2L] == "LEAF_MAX" ) |
+    ( ! ph_deg0 & x$type[, 2L] == "DOWNFORK" )
 
   # degree-0 features; ordinary part (increasing)
   ord_0 <- ph_deg0 & ( ! ph_ext )
-  ph_ord_0 <- cbind(x[[lo_hi[1L]]][ord_0], x[[lo_hi[2L]]][ord_0])
+  ph_ord_0 <- unname(cbind(x[[scale]][ord_0, 1L], x[[scale]][ord_0, 2L]))
   # degree-1 features; relative part (decreasing)
   rel_1 <- ( ! ph_deg0 ) & ( ! ph_ext )
-  ph_rel_1 <- cbind(x[[lo_hi[2L]]][rel_1], x[[lo_hi[1L]]][rel_1])
+  ph_rel_1 <- unname(cbind(x[[scale]][rel_1, 2L], x[[scale]][rel_1, 1L]))
   # degree-0 features; extended-positive part (increasing)
   ext_0 <- ph_deg0 & ph_ext
-  ph_ext_0 <- cbind(x[[lo_hi[1L]]][ext_0], x[[lo_hi[2L]]][ext_0])
+  ph_ext_0 <- unname(cbind(x[[scale]][ext_0, 1L], x[[scale]][ext_0, 2L]))
   # degree-1 features; extended-negative part (decreasing)
   ext_1 <- ( ! ph_deg0 ) & ph_ext
-  ph_ext_1 <- cbind(x[[lo_hi[2L]]][ext_1], x[[lo_hi[1L]]][ext_1])
+  ph_ext_1 <- unname(cbind(x[[scale]][ext_1, 2L], x[[scale]][ext_1, 1L]))
 
   # format as persistence data
-  ph <- phutil::as_persistence(list(
-    rbind(ph_ord_0, ph_ext_0),
-    rbind(ph_rel_1, ph_ext_1)
-  ))
+  ph <- phutil::as_persistence(
+    list(
+      rbind(ph_ord_0, ph_ext_0),
+      rbind(ph_rel_1, ph_ext_1)
+    ),
+    warn = FALSE
+  )
   ph$metadata$engine <- "rgp::reeb_graph_persistence"
   ph$metadata$filtration <- paste0(
     "extended Reeb (",
     if (attr(x, "sublevel")) "sublevel" else "superlevel",
     ")"
   )
-  # FIXME: Encode parameters so that they print with quotes.
   ph$metadata$parameters <- list(
-    method = attr(x, "method"),
-    scale = scale
+    method = paste0("'", attr(x, "method"), "'"),
+    scale = paste0("'", scale, "'")
   )
 
   ph

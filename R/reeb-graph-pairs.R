@@ -14,14 +14,15 @@
 #'   the sublevel filtration and others along the superlevel filtration (Tu &al,
 #'   2019).
 #'
-#'   Note that the names of the output data frame use `lo_` and `hi_` prefixes,
-#'   in contrast to the Java source code that uses `birth_` and `death_`. This
-#'   is meant to distinguish the pairs and their metadata from [persistent
+#'   The output S3 class is a list of 2-column matrices containing the types,
+#'   values, indices, and orders of persistent pairs, with attributes containing
+#'   the node names and metadata.
+#'
+#'   The names of the coerced data frame use `lo_` and `hi_` prefixes, in
+#'   contrast to the Java source code that uses `birth_` and `death_`. This is
+#'   meant to distinguish the pairs and their metadata from [persistent
 #'   homology][reeb_graph_persistence], which is here reformulated following
 #'   Carrière & Oudot (2018).
-#'
-#'   The output S3 class is a light wrapper around a data frame containing the
-#'   types, values, indices, and orders of persistent pairs.
 #'
 #' @param x A [`reeb_graph`][reeb_graph] object.
 #' @inheritParams as_reeb_graph
@@ -30,41 +31,35 @@
 #'   `x$values` before paring critical points.
 #' @param method Character; the pairing method to use. Matched to
 #'   `"single_pass"` (the default) or `"multi_pass"`.
-#' @return A data frame with subclass [reeb_graph_pairs] containing eight
-#'   vectors output by the Java method characterizing the low- and high-valued
-#'   critical points of each pair, plus two additional vectors if nodes are
-#'   named:
+#' @return A list of subclass [reeb_graph_pairs] containing 4 2-column matrices
+#'   characterizing the low- and high-valued critical points of each pair:
 #'   \describe{
-#'     \item{`lo_type`,`hi_type`}{
+#'     \item{`type`}{
 #'       Character; the type of critical point,
 #'       one of `LEAF_MIN`, `LEAF_MAX`, `UPFORK`, and `DOWNFORK`.
 #'     }
-#'     \item{`lo_value`,`hi_value`}{
+#'     \item{`value`}{
 #'       Double; the value (stored in `x$values`) of the critical point.
 #'     }
-#'     \item{`lo_index`,`hi_index`}{
+#'     \item{`index`}{
 #'       Integer; the index (used in `x$edgelist`) of the critical point.
 #'       Regular points will not appear,
 #'       while degenerate critical points will appear multiple times.
 #'     }
-#'     \item{`lo_order`,`hi_order`}{
+#'     \item{`order`}{
 #'       Integer; the order of the critical point in the pairing.
 #'       This is based on the conditioned Reeb graph constructed internally
 #'       so will not be duplicated.
 #'     }
-#'     \item{`lo_name`, `hi_name`}{
-#'       Character; the name of each `index` node.
-#'       Included only if `names(x$values)` is not `NULL`.
-#'     }
 #'   }
-#'   The data frame also has attributes `"method"` for the method used and
-#'   `"elapsedTime"` for the elapsed time.
+#'   The data frame also has attributes `"names"` for the node names, `"method"`
+#'   for the method used, and `"elapsed_time"` for the elapsed time.
 #' @examples
 #' ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
 #' ( ex_rg <- read_reeb_graph(ex_sf) )
 #' ( ex_cp <- reeb_graph_pairs(ex_rg) )
 #' attr(ex_cp, "method")
-#' attr(ex_cp, "elapsedTime")
+#' attr(ex_cp, "elapsed_time")
 #'
 #' reeb_graph_pairs(ex_rg, sublevel = FALSE)
 #'
@@ -129,6 +124,7 @@ reeb_graph_pairs.reeb_graph <- function(
   if (! is.logical(sublevel) || is.na(sublevel))
     stop("`sublevel` must be `TRUE` or `FALSE`.")
   if (! sublevel) x$values <- -x$values
+
   # dynamically decide which pairing method to use based on the method
   method <- match.arg(tolower(method), c("single_pass", "multi_pass"))
 
@@ -181,24 +177,17 @@ reeb_graph_pairs.reeb_graph <- function(
     vRealValues <- -vRealValues
   }
 
-  # assemble as data frame
-  res <- data.frame(
-    lo_type  = vType,
-    hi_type  = pType,
-    lo_value = vRealValues,
-    hi_value = pRealValues,
-    lo_index = vGlobalIDs,
-    hi_index = pGlobalIDs,
-    lo_order = vValues,
-    hi_order = pValues
+  # assemble as a list of 2-column matrices
+  res <- list(
+    type  = cbind(lo = vType      , hi = pType      ),
+    value = cbind(lo = vRealValues, hi = pRealValues),
+    index = cbind(lo = vGlobalIDs , hi = pGlobalIDs ),
+    order = cbind(lo = vValues    , hi = pValues    )
   )
-  if (! is.null(names(x$values))) {
-    res$lo_name <- names(x$values)[res$lo_index]
-    res$hi_name <- names(x$values)[res$hi_index]
-  }
+  attr(res, "vertex_names") <- names(x$values)
   attr(res, "sublevel") <- sublevel
   attr(res, "method") <- method
-  attr(res, "elapsedTime") <- elapsedTime
+  attr(res, "elapsed_time") <- elapsedTime
 
   class(res) <- c("reeb_graph_pairs", class(res))
   res
@@ -207,32 +196,36 @@ reeb_graph_pairs.reeb_graph <- function(
 #' @export
 as.data.frame.reeb_graph_pairs <- function(x, ...) {
   check_reeb_graph_pairs(x)
-  class(x) <- "data.frame"
-  x
+  df <- do.call(cbind, lapply(x, as.data.frame))
+  colnames(df) <- outer(
+    c("lo", "hi"),
+    c("type", "value", "index", "order"),
+    FUN = paste, sep = "_"
+  )
+  if (! is.null(attr(x, "vertex_names"))) {
+    df$lo_name <- attr(x, "vertex_names")[df$lo_index]
+    df$hi_name <- attr(x, "vertex_names")[df$hi_index]
+  }
+  df
 }
 
 check_reeb_graph_pairs <- function(x) {
   stopifnot(
-    inherits(x, "data.frame"),
-    length(x) == 8L || length(x) == 10L,
-    setequal(
-      names(x),
-      outer(
-        c("lo", "hi"),
-        c("type", "value", "index", "order", "name"),
-        FUN = paste, sep = "_"
-      )[seq(length(x))]
-    ),
-    is.numeric(x$lo_value), is.numeric(x$hi_value),
-    is.integer(x$lo_index), is.integer(x$hi_index),
-    is.numeric(x$lo_order), is.numeric(x$hi_order),
+    length(x) == 4L,
+    all(names(x) == c("type", "value", "index", "order")),
+    all(sapply(x, colnames) %in% c("lo", "hi")),
+    all(x$type %in% c("LEAF_MIN", "DOWNFORK", "LEAF_MAX", "UPFORK")),
+    is.numeric(x$value),
+    is.integer(x$index),
+    is.numeric(x$order),
     # RHS is only evaluated if LHS is false
-    is.null(x$lo_name) || is.character(x$lo_name),
-    is.null(x$hi_name) || is.character(x$hi_name)
+    is.null(attr(x, "vertex_names")) || is.character(attr(x, "vertex_names"))
   )
   # check that types are comprehensible
   stopifnot(
-    all(x$lo_type == "LEAF_MIN" | x$lo_type == "UPFORK"),
-    all(x$hi_type == "LEAF_MAX" | x$hi_type == "DOWNFORK")
+    all(x$type[, 1L] == "LEAF_MIN" | x$type[, 1L] == "UPFORK"),
+    all(x$type[, 2L] == "LEAF_MAX" | x$type[, 2L] == "DOWNFORK")
   )
 }
+
+# TODO: Write a `format()` and/or `print()` method for `reeb_graph_pairs`.
