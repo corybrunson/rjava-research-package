@@ -1,6 +1,6 @@
 #' @title Coerce objects to class `reeb_graph`
 #'
-#' @description Coerce objects to [reeb_graph]-class objects.
+#' @description Coerce objects to `[reeb_graph]`-class objects.
 #'
 #' @details The `as_reeb_graph()` methods require a network (mathematical graph)
 #'   structure and a real-valued function on the vertex set.
@@ -20,6 +20,7 @@
 #'   which to store the Reeb graph value function.
 #' @param ... Additional arguments passed to methods.
 #' @returns A [reeb_graph] object.
+#' @seealso [reeb_graph()]
 
 #' @examplesIf rlang::is_installed("igraph")
 #' library(igraph)
@@ -42,11 +43,9 @@
 #'   lower_org = mtsi_names[mtsi_cp[, "birth_index"]],
 #'   upper_org = mtsi_names[mtsi_cp[, "death_index"]]
 #' ))
-
 #' @export
 as_reeb_graph <- function(x, ...) UseMethod("as_reeb_graph")
 
-#' @rdname reeb_graph
 #' @export
 as_reeb_graph.igraph <- function(x, values = NULL, names = NULL, ...) {
   if (is.null(values)) {
@@ -76,7 +75,6 @@ as_reeb_graph.igraph <- function(x, values = NULL, names = NULL, ...) {
   r <- reeb_graph(values, igraph::as_edgelist(x, names = FALSE))
 }
 
-#' @rdname reeb_graph
 #' @export
 as_reeb_graph.network <- function(x, values = NULL, names = NULL, ...) {
   if (network::is.bipartite(x))
@@ -108,11 +106,9 @@ as_reeb_graph.network <- function(x, values = NULL, names = NULL, ...) {
   reeb_graph(values, as.matrix(x, matrix.type = "edgelist"))
 }
 
-#' @rdname reeb_graph
 #' @export
 as_igraph <- function(x, ...) UseMethod("as_igraph")
 
-#' @rdname reeb_graph
 #' @export
 as_igraph.reeb_graph <- function(x, values = "value", names = "name", ...) {
   g <- igraph::graph_from_edgelist(x$edgelist)
@@ -122,11 +118,9 @@ as_igraph.reeb_graph <- function(x, values = "value", names = "name", ...) {
   g
 }
 
-#' @rdname reeb_graph
 #' @export
 as_network <- function(x, ...) UseMethod("as_network")
 
-#' @rdname reeb_graph
 #' @export
 as_network.reeb_graph <- function(
     x, values = "value", names = "vertex.names", ...

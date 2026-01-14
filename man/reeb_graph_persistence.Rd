@@ -2,41 +2,9 @@
 % Please edit documentation in R/reeb-graph-persistence.R
 \name{reeb_graph_persistence}
 \alias{reeb_graph_persistence}
-\alias{reeb_graph_persistence.default}
-\alias{reeb_graph_persistence.igraph}
-\alias{reeb_graph_persistence.network}
-\alias{reeb_graph_persistence.reeb_graph}
-\alias{reeb_graph_persistence.reeb_graph_pairs}
 \title{Compute Extended Persistent Homology of a Reeb Graph}
 \usage{
 reeb_graph_persistence(x, ...)
-
-\method{reeb_graph_persistence}{default}(x, ...)
-
-\method{reeb_graph_persistence}{igraph}(
-  x,
-  values = NULL,
-  sublevel = TRUE,
-  method = c("single_pass", "multi_pass"),
-  scale = c("value", "index", "order")
-)
-
-\method{reeb_graph_persistence}{network}(
-  x,
-  values = NULL,
-  sublevel = TRUE,
-  method = c("single_pass", "multi_pass"),
-  scale = c("value", "index", "order")
-)
-
-\method{reeb_graph_persistence}{reeb_graph}(
-  x,
-  sublevel = TRUE,
-  method = c("single_pass", "multi_pass"),
-  scale = c("value", "index", "order")
-)
-
-\method{reeb_graph_persistence}{reeb_graph_pairs}(x, scale = c("value", "index", "order"))
 }
 \arguments{
 \item{x}{A \code{\link{reeb_graph}} or
@@ -44,19 +12,6 @@ reeb_graph_persistence(x, ...)
 \link[=as_reeb_graph]{coerced to class "reeb_graph"}.}
 
 \item{...}{Additional arguments passed to methods.}
-
-\item{values}{For coercion \emph{to} class \code{reeb_graph}, a character value; the
-node attribute to use as the Reeb graph value function. If \code{NULL} (the
-default), the first numeric node attribute is used. For coercion \emph{from}
-class \code{reeb_graph}, a character value; the name of the node attribute in
-which to store the Reeb graph value function.}
-
-\item{sublevel}{Logical; whether to use the sublevel set filtration (\code{TRUE},
-the default) or else the superlevel set filtration (via reversing
-\code{x[["values"]]} before paring critical points.}
-
-\item{method}{Character; the pairing method to use. Matched to
-\code{"single_pass"} (the default) or \code{"multi_pass"}.}
 
 \item{scale}{Character; the scale parameter used by the persistent pairs.
 Matched to \code{"value"} (the default), \code{"index"}, or \code{"order"}.}
@@ -74,7 +29,7 @@ The types, values, and indices of critical pairs are obtained by
 internally with the prescribed \code{method}, then restructures the values or
 indices as \link[phutil:persistence]{phutil::persistence} data.
 
-This function may be deprecated once a \code{"reeb_graph_pairs"} method is
+This function may be deprecated once a \code{reeb_graph_pairs} method is
 written for \code{\link[phutil:persistence]{phutil::as_persistence()}}.
 }
 \examples{
@@ -93,4 +48,7 @@ phutil::get_pairs(t10_ph, dimension = 0)
 ( t10_ph <- reeb_graph_persistence(t10, scale = "order") )
 phutil::get_pairs(t10_ph, dimension = 0)
 
+}
+\seealso{
+\code{\link[=reeb_graph_pairs]{reeb_graph_pairs()}}
 }

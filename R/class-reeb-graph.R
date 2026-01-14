@@ -12,7 +12,7 @@
 #'
 #' @param values Numeric vector of function values at vertices.
 #' @param edgelist 2-column integer matrix of linked vertex pairs.
-#' @param x Object of class `"reeb_graph"`.
+#' @param x Object of class `reeb_graph`.
 #' @param ... Additional arguments passed to [base::format()].
 #' @param n Integer number of edges to print.
 #' @param file A plain text file containing Reeb graph data formatted as at
@@ -21,6 +21,7 @@
 #'
 #' - `values`: Numeric vector of function values at vertices, optionally named.
 #' - `edgelist`: 2-column integer matrix of linked vertex pairs.
+#' @seealso [as_reeb_graph()]
 #' @examples
 #' x <- reeb_graph(
 #'   values = c(a = 0, b = .4, c = .6, d = 1),
@@ -64,13 +65,11 @@ check_reeb_data <- function(values, edgelist) {
   )
 }
 
-#' @rdname reeb_graph
 #' @export
 print.reeb_graph <- function(x, ..., n = NULL) {
   cat(format(x, ..., n = n), sep = "\n")
 }
 
-#' @rdname reeb_graph
 #' @export
 format.reeb_graph <- function(x, ..., n = NULL) {
   vcount <- length(x[["values"]])
@@ -109,7 +108,6 @@ format.reeb_graph <- function(x, ..., n = NULL) {
   ))
 }
 
-#' @rdname reeb_graph
 #' @export
 read_reeb_graph <- function(file) {
   lines <- readLines(file)

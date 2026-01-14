@@ -8,7 +8,7 @@
 #'   internally with the prescribed `method`, then restructures the values or
 #'   indices as [phutil::persistence] data.
 #'
-#'   This function may be deprecated once a `"reeb_graph_pairs"` method is
+#'   This function may be deprecated once a `reeb_graph_pairs` method is
 #'   written for [phutil::as_persistence()].
 #'
 #' @param x A [`reeb_graph`][reeb_graph] or
@@ -19,6 +19,7 @@
 #' @param scale Character; the scale parameter used by the persistent pairs.
 #'   Matched to `"value"` (the default), `"index"`, or `"order"`.
 #' @return A [phutil::persistence] object.
+#' @seealso [reeb_graph_pairs()]
 #' @examples
 #' ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
 #' ( ex_rg <- read_reeb_graph(ex_sf) )
@@ -38,7 +39,6 @@
 #' @export
 reeb_graph_persistence <- function(x, ...) UseMethod("reeb_graph_persistence")
 
-#' @rdname reeb_graph_persistence
 #' @export
 reeb_graph_persistence.default <- function(x, ...) {
   stop(paste0(
@@ -63,15 +63,12 @@ reeb_graph_persistence_graph <- function(
   )
 }
 
-#' @rdname reeb_graph_persistence
 #' @export
 reeb_graph_persistence.igraph <- reeb_graph_persistence_graph
 
-#' @rdname reeb_graph_persistence
 #' @export
 reeb_graph_persistence.network <- reeb_graph_persistence_graph
 
-#' @rdname reeb_graph_persistence
 #' @export
 reeb_graph_persistence.reeb_graph <- function(
     x,
@@ -86,7 +83,6 @@ reeb_graph_persistence.reeb_graph <- function(
   reeb_graph_persistence.reeb_graph_pairs(cp, scale = scale)
 }
 
-#' @rdname reeb_graph_persistence
 #' @export
 reeb_graph_persistence.reeb_graph_pairs <- function(
     x,

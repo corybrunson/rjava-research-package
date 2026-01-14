@@ -26,7 +26,7 @@ which to store the Reeb graph value function.}
 A \link{reeb_graph} object.
 }
 \description{
-Coerce objects to \link{reeb_graph}-class objects.
+Coerce objects to \verb{[reeb_graph]}-class objects.
 }
 \details{
 The \code{as_reeb_graph()} methods require a network (mathematical graph)
@@ -58,4 +58,7 @@ head(data.frame(
   upper_org = mtsi_names[mtsi_cp[, "death_index"]]
 ))
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=reeb_graph]{reeb_graph()}}
 }

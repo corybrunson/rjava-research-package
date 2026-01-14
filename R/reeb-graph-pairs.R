@@ -56,6 +56,7 @@
 #'   }
 #'   The data frame also has attributes `"names"` for the node names, `"method"`
 #'   for the method used, and `"elapsed_time"` for the elapsed time.
+#' @seealso [reeb_graph_persistence()]
 #' @examples
 #' ex_sf <- system.file("extdata", "running_example.txt", package = "rgp")
 #' ( ex_rg <- read_reeb_graph(ex_sf) )
@@ -83,7 +84,6 @@
 #' @export
 reeb_graph_pairs <- function(x, ...) UseMethod("reeb_graph_pairs")
 
-#' @rdname reeb_graph_pairs
 #' @export
 reeb_graph_pairs.default <- function(x, ...) {
   stop(paste0(
@@ -107,15 +107,12 @@ reeb_graph_pairs_graph <- function(
   )
 }
 
-#' @rdname reeb_graph_pairs
 #' @export
 reeb_graph_pairs.igraph <- reeb_graph_pairs_graph
 
-#' @rdname reeb_graph_pairs
 #' @export
 reeb_graph_pairs.network <- reeb_graph_pairs_graph
 
-#' @rdname reeb_graph_pairs
 #' @export
 reeb_graph_pairs.reeb_graph <- function(
     x,
