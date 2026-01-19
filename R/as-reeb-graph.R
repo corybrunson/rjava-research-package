@@ -29,7 +29,8 @@
 #' plot(g, layout = l_g)
 #' ( rg <- as_reeb_graph(g, l_g[, 1]) )
 #' vertex_attr(g, "height") <- rg$value
-#' l_rg <- layout_with_sugiyama(g, V(g)$height)
+#' heights <- sort(unique(V(g)$height))
+#' l_rg <- layout_with_sugiyama(g, layers = round(V(g)$height * 100))
 #' plot(g, layout = l_rg)
 
 #' @examplesIf rlang::is_installed("network")
