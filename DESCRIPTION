@@ -44,8 +44,8 @@ Depends:
 Suggests:
     rlang,
     tinytest,
-    igraph,
-    network
+    igraph (>= 0.6-0),
+    network (>= 1.19.0)
 SystemRequirements: Java (>= 5.0)
 License: GPL-3
 Packaged: 2014-09-04 13:17:36 UTC; tverbeke
