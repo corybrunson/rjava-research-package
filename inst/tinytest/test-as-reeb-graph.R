@@ -35,6 +35,29 @@ if (rlang::is_installed("network")) {
 # coercers to Reeb graphs work
 
 
+if (rlang::is_installed("igraph")) {
+  g <- igraph::make_graph(c( 1,3, 2,3, 2,4, 3,5, 4,5, 5,6 ))
+  igraph::vertex_attr(g, "test") <- seq(igraph::vcount(g)) + .5
+  expect_silent(rg <- as_reeb_graph(g, values = "test"))
+  expect_equal(rg$values, igraph::vertex_attr(g, "test"))
+  expect_equal(rg$edgelist, igraph::as_edgelist(g))
+}
+
+if (rlang::is_installed("network")) {
+  net <-
+    network::network(rbind( c(1,3), c(2,3), c(2,4), c(3,5), c(4,5), c(5,6)) )
+  network::set.vertex.attribute(
+    net, "test",
+    seq(network::network.size(net)) + .5
+  )
+  expect_silent(rg <- as_reeb_graph(net, values = "test"))
+  expect_equal(rg$values, network::get.vertex.attribute(net, "test"))
+  # FIXME: Remove attributes from Reeb graph edgelist.
+  expect_equal(
+    rg$edgelist, as.matrix(net, matrix.type = "edgelist"),
+    check.attributes = FALSE
+  )
+}
 
 # coercers from Reeb graphs work
 
