@@ -105,7 +105,9 @@ as_reeb_graph.network <- function(x, values = NULL, names = NULL, ...) {
     }
   }
 
-  reeb_graph(values, as.matrix(x, matrix.type = "edgelist"))
+  x_el <- as.matrix(x, matrix.type = "edgelist")
+  attributes(x_el) <- list(dim = dim(x_el))
+  reeb_graph(values, x_el)
 }
 
 #' @rdname as_reeb_graph

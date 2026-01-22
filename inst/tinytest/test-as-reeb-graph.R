@@ -45,14 +45,13 @@ if (rlang::is_installed("igraph")) {
 
 if (rlang::is_installed("network")) {
   net <-
-    network::network(rbind( c(1,3), c(2,3), c(2,4), c(3,5), c(4,5), c(5,6)) )
+    network::network(rbind( c(1,3), c(2,3), c(3,4), c(2,4), c(4,5)) )
   network::set.vertex.attribute(
     net, "test",
     seq(network::network.size(net)) + .5
   )
   expect_silent(rg <- as_reeb_graph(net, values = "test"))
   expect_equal(rg$values, network::get.vertex.attribute(net, "test"))
-  # FIXME: Remove attributes from Reeb graph edgelist.
   expect_equal(
     rg$edgelist, as.matrix(net, matrix.type = "edgelist"),
     check.attributes = FALSE
