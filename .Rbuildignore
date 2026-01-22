@@ -5,6 +5,7 @@
 # package
 java/.idea
 man-roxygen
+cran-comments.md
 
 # custom
 sandbox
