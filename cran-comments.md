@@ -12,11 +12,14 @@
 
 
 
+On the local install with R v4.5.1 (and rJava v1.0.11), there were no ERRORs, WARNINGs, or NOTEs.
+
 ### WinBuilder
 
+There were no ERRORs or WARNINGs.
 
-
-Several possibly misspelled words are in fact spelled correctly: "Reeb", "ReebGraphPairing", and "rJava".
+There was consistently 1 NOTE, about several possibly misspelled words, though these are in fact spelled correctly:
+"Hajij", "Oudot", "Reeb", "ReebGraphPairing", "Rosen", and "rJava".
 
 ## Downstream dependencies
 
