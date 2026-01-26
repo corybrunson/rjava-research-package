@@ -1,0 +1,36 @@
+---
+title: "Persistent Homology of Glomerular Capillaries"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Persistent Homology of Glomerular Capillaries}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rgph)
+```
+
+
+
+```{r reconstructed glomerulus}
+
+```
+
+
+
+```{r circuit analysis}
+
+if (is_directed(graph)) graph <- to_undirected(graph)
+L <- laplacian_matrix(graph, sparse = FALSE)
+inv <- solve(L[-nrow(L), -nrow(L)])
+vol <- inv %*% matrix(c(1, rep(0, nrow(L) - 2)), ncol = 1)
+c(vol, 0)
+```
