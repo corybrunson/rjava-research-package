@@ -1,0 +1,89 @@
+---
+title: "Persistent Homology of Mapper Graphs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Persistent Homology of Mapper Graphs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mappeR)
+library(igraph)
+library(rgph)
+```
+
+
+
+```{r}
+x <- as.data.frame(tdaunif::sample_circle(n = 720))
+x <- as.data.frame(tdaunif::sample_circles_interlocked(n = 2520))
+# x <- as.data.frame(tdaunif::sample_tori_interlocked(n = 2520))
+rownames(x) <- seq(nrow(x))
+pairs(x)
+pc1 <- prcomp(x)$x[, 1]
+```
+
+
+
+```{r}
+n <- 60
+d <- dist(x)
+r <- range(pc1)
+u <- create_width_balanced_cover(
+  r[1] - diff(r) / (n-1), r[2] + diff(r) / (n-1),
+  num_bins = n, percent_overlap = 50
+)
+q <- function(ab) { function(x) (ab[1] - x <= 0) & (ab[2] - x > 0) }
+m <- create_mapper_object(
+  data = x,
+  dists = d,
+  filtered_data = pc1,
+  cover_element_tests = apply(u, 1, q),
+  clusterer = local_hierarchical_clusterer("single")
+)
+```
+
+
+
+```{r}
+g <- graph_from_data_frame(m[[2]], directed = FALSE, vertices = m[[1]])
+plot(g, vertex.label = NA)
+```
+
+
+
+```{r}
+rg <- reeb_graph(
+  values = vapply(m[[1]]$medoid, function(i) x[i, 1], 0.),
+  edgelist = cbind(as.numeric(m[[2]]$source), as.numeric(m[[2]]$target))
+)
+ph <- reeb_graph_persistence(rg)
+```
+
+
+
+```{r}
+plot(
+  NULL, asp = 1,
+  xlim = r, ylim = r,
+  axes = 0, xlab = "", ylab = ""
+)
+axis(side = 1, at = seq(0, r[2], by = 1), labels = FALSE, lty = 0)
+axis(side = 2, at = seq(0, r[2], by = 1), labels = FALSE, lty = 0)
+segments(
+  x0 = c(r[1],    0, r[1]),
+  y0 = c(   0, r[1], r[1]),
+  x1 = c(r[2],    0, r[2]),
+  y1 = c(   0, r[2], r[2])
+)
+points(ph$pairs[[1]], pch = 15, col = 1)
+points(ph$pairs[[2]], pch = 16, col = 2)
+```
