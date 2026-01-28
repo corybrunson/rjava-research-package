@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Persistent Homology of Mapper Graphs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{tdaunif,ripserr,TDA,mappeR,igraph}
 ---
 
 ```{r, include = FALSE}
@@ -14,7 +15,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-
+_Reeb graphs_ originated in the characterization of scalar fields on manifolds, but they have also found applications outside pure topology.
+They also inspired the data analytic _mapper_ construction, which can be understood as a computable approximation of a Reeb graph and can also be calculated for a finite sample, i.e. a data set.
+This vignette uses **rgph** to compute persistent homology of mapper graphs.
 
 ```{r setup}
 library(mappeR)
@@ -22,82 +25,116 @@ library(igraph)
 library(rgph)
 ```
 
-## Mapper graphs as Reeb graphs
+## Reeb graphs of mapper graphs
 
 The mapper construction is most commonly used to visualize (often but not always high-dimensional) quantitative data, a role similar to that of the more popular t-SNE and UMAP tools.
 The construction returns a simplicial complex, each simplex of which corresponds to a subset of data points, which is usually visualized using coordinates obtained from graph layout algorithms.
-Whereas the construction relies on a filter function $f : X \to \mathbb{R}$, each simplex in the complex can be decorated by the average filter values of its constituent points.
+Whereas the construction relies on a filter function $ f : X \to \mathbb{R} $, each simplex in the complex can be decorated by the average filter values of its constituent points.
 This may not yield a filtration function or even a Morse function on the complex, but by focusing only on the vertices we can interpolate along the edges to obtain a Reeb graph.
 This Reeb graph has a distinctive persistent homology that may reveal fundamentally different topological properties than the ordinary homology of the graph or the persistent homology of the sample, both of which approximate the homology of a presumed underlying manifold.
 The goal of this exercise is to illustrate some of these differences.
 
-```{r}
+We begin by sampling without noise from two embeddings $ \mathbb{S}^1 \to \mathbb{R}^3 $: the unit circle (in the $xy$-plane) and a parameterized trefoil knot:
+
+```{r samples}
 set.seed(680927)
 x <- tdaunif::sample_circle(n = 1260)
-# x <- tdaunif::sample_trefoil(n = 1680)
-# x <- tdaunif::sample_circles_interlocked(n = 2520)
-rownames(x) <- seq(nrow(x))
 pairs(x)
-pca <- prcomp(x)
-pairs(pca$x)
+set.seed(680927)
+y <- tdaunif::sample_trefoil(n = 1680)
+pairs(y)
 ```
 
+These embeddings have the same intrinsic _topology_, which we can detect from their samples through the persistent homology of Vietoris--Rips filtrations (limited to degree 1 for runtime).
+While the trefoil has some additional degree-1 features, they amount to noise in comparison to the larger 1-interval:
 
-
-```{r}
-f <- pca$x[, 1]
-n <- 60
-d <- dist(x)
-r <- range(f)
-u <- create_width_balanced_cover(
-  r[1] - diff(r) / (n-1), r[2] + diff(r) / (n-1),
-  num_bins = n, percent_overlap = 50
-)
-q <- function(ab) { function(x) (ab[1] - x <= 0) & (ab[2] - x > 0) }
-m <- create_mapper_object(
-  data = as.data.frame(x),
-  dists = d,
-  filtered_data = f,
-  cover_element_tests = apply(u, 1, q),
-  clusterer = local_hierarchical_clusterer("single")
-)
+```{r vietoris-rips}
+x_ph <- ripserr::vietoris_rips(x, max_dim = 1, )
+y_ph <- ripserr::vietoris_rips(y, max_dim = 1)
+op <- par(mfrow = c(1,2))
+TDA::plot.diagram(as.data.frame(x_ph))
+TDA::plot.diagram(as.data.frame(y_ph))
+par(op)
 ```
 
+However, the embeddings have different intrinsic _geometries_.[^extrinsic]
+We will use their first principal axes as a coordinate-free lens on these geometries.
+We use the **mappeR** package to construct mappers for these samples using roughly the same parameter settings, using a custom one-pass function for consistency and convenience.
+The cover comprises overlapping clopen intervals and preimages are partitioned using adaptive single-linkage clustering:
 
+[^extrinsic]: They also have different _extrinsic_ topologies, one being unknotted, the other knotted, but we don't focus on that here.
 
 ```{r}
-g <- graph_from_data_frame(m[[2]], directed = FALSE, vertices = m[[1]])
-table(degree(g))
-plot(g, vertex.label = NA)
+create_custom_mapper <- function(s) {
+  # row names required by later tasks
+  rownames(s) <- seq(nrow(s))
+  d <- dist(s)
+  f <- prcomp(s)$x[, 1]
+  r <- range(f)
+  n <- 60
+  u <- create_width_balanced_cover(
+    r[1] - diff(r) / (n-1), r[2] + diff(r) / (n-1),
+    num_bins = n, percent_overlap = 50
+  )
+  q <- function(ab) { function(x) (ab[1] - x <= 0) & (ab[2] - x > 0) }
+  create_mapper_object(
+    data = as.data.frame(s),
+    dists = d,
+    filtered_data = f,
+    cover_element_tests = apply(u, 1, q),
+    clusterer = local_hierarchical_clusterer("single")
+  )
+}
+x_mapper <- create_custom_mapper(x)
+y_mapper <- create_custom_mapper(y)
 ```
 
-
+To visualize the mapper graphs, we use plotting tools from **igraph**.
+The plots reflect the intrinsic homology obtained above using Vietoris--Rips filtrations.
 
 ```{r}
-rg <- reeb_graph(
-  values = vapply(m[[1]]$medoid, function(i) x[i, 1], 0.),
-  edgelist = cbind(as.numeric(m[[2]]$source), as.numeric(m[[2]]$target))
+x_graph <- graph_from_data_frame(
+  x_mapper[[2]], directed = FALSE, vertices = x_mapper[[1]]
 )
-ph <- reeb_graph_persistence(rg)
-m_range <- range(x[m[[1]]$medoid, 1])
+y_graph <- graph_from_data_frame(
+  y_mapper[[2]], directed = FALSE, vertices = y_mapper[[1]]
+)
+table(degree(x_graph))
+table(degree(y_graph))
+op <- par(mfrow = c(1,2))
+plot(x_graph, vertex.label = NA)
+plot(y_graph, vertex.label = NA)
+par(op)
 ```
 
-
+What about the samples' topologies viewed through their first principal component lenses?
+First we construct Reeb graphs from the mapper graphs:
 
 ```{r}
-plot(
-  NULL, asp = 1,
-  xlim = r, ylim = r,
-  axes = 0, xlab = "", ylab = ""
+x_reeb <- reeb_graph(
+  values = vapply(x_mapper[[1]]$medoid, function(i) x[i, 1], 0.),
+  edgelist = cbind(
+    as.numeric(x_mapper[[2]]$source),
+    as.numeric(x_mapper[[2]]$target)
+  )
 )
-axis(side = 1, at = seq(0, r[2], by = 1), labels = FALSE, lty = 0)
-axis(side = 2, at = seq(0, r[2], by = 1), labels = FALSE, lty = 0)
-segments(
-  x0 = c(r[1],    0, r[1]),
-  y0 = c(   0, r[1], r[1]),
-  x1 = c(r[2],    0, r[2]),
-  y1 = c(   0, r[2], r[2])
+x_eph <- reeb_graph_persistence(x_reeb)
+y_reeb <- reeb_graph(
+  values = vapply(y_mapper[[1]]$medoid, function(i) y[i, 1], 0.),
+  edgelist = cbind(
+    as.numeric(y_mapper[[2]]$source),
+    as.numeric(y_mapper[[2]]$target)
+  )
 )
-points(ph$pairs[[1]], pch = 15, col = 1)
-points(ph$pairs[[2]], pch = 16, col = 2)
+y_eph <- reeb_graph_persistence(y_reeb)
+```
+
+We can now compute extended persistent homology by way of pairing critical vertices.
+Below we compare the resulting persistence diagrams:
+
+```{r}
+op <- par(mfrow = c(1,2))
+TDA::plot.diagram(as.data.frame(x_eph))
+TDA::plot.diagram(as.data.frame(y_eph))
+par(op)
 ```
