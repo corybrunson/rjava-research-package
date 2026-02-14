@@ -157,6 +157,9 @@ reeb_graph_pairs.reeb_graph <- function(
   # dynamically decide which pairing method to use based on the method
   method <- match.arg(tolower(method), c("single_pass", "multi_pass"))
 
+  # remove isolated vertices
+  x <- drop_reeb_graph_points(x)
+
   # converting R vectors into the required format for Java
   vertex_indices_java <- .jarray(seq(0L, length(x[["values"]]) - 1L))
   # REVIEW: Are floats in Java as precise as doubles in R?
@@ -237,6 +240,17 @@ as.data.frame.reeb_graph_pairs <- function(x, ...) {
     df$hi_name <- attr(x, "vertex_names")[df$hi_index]
   }
   df
+}
+
+drop_reeb_graph_points <- function(x) {
+  incidents <- sort(unique(as.vector(x$edgelist)))
+  n_isolates <- length(x$values) - length(incidents)
+  if (n_isolates > 0L) {
+    x$values <- x$values[incidents]
+    x$edgelist[] <- match(x$edgelist, incidents)
+    message("Note: ", n_isolates, " isolated vertices were dropped.")
+  }
+  x
 }
 
 check_reeb_graph_pairs <- function(x) {

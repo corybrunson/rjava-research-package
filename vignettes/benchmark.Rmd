@@ -63,7 +63,7 @@ However, the single-pass algorithm---Propagate and Pair---is a marginal improvem
 
 
 ```{r flower}
-# FIXME: `flower` has disconnected vertices that crash the pairing functions.
+flower <- rgph:::drop_reeb_graph_points(flower)
 bench::mark(
   multi = reeb_graph_pairs(flower, method = "multi_pass"),
   single = reeb_graph_pairs(flower, method = "single_pass"),
