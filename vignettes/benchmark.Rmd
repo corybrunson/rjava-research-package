@@ -63,11 +63,10 @@ However, the single-pass algorithm---Propagate and Pair---is a marginal improvem
 
 
 ```{r flower}
-flower_file <- system.file("extdata", "flower_reebgraph.txt", package = "rgph")
-flower_reeb <- read_reeb_graph(flower_file)
+# FIXME: `flower` has disconnected vertices that crash the pairing functions.
 bench::mark(
-  multi = reeb_graph_pairs(flower_reeb, method = "multi_pass"),
-  single = reeb_graph_pairs(flower_reeb, method = "single_pass"),
+  multi = reeb_graph_pairs(flower, method = "multi_pass"),
+  single = reeb_graph_pairs(flower, method = "single_pass"),
   check = FALSE
 )
 ```

@@ -4,7 +4,8 @@
 
 # package
 java/.idea
-man-roxygen
+^man-roxygen$
+^data-raw$
 cran-comments.md
 
 # custom
